@@ -5,19 +5,24 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, MapPin, Grid3X3, List, X, ArrowUpDown, Heart,
-  ChevronLeft, ChevronRight, Star, SlidersHorizontal, Filter,
+  ChevronLeft, ChevronRight, Star, SlidersHorizontal, Building2, Camera, Music,
+  Sparkles, Car, ClipboardList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardImage } from "@/components/ui/card";
-import { StarRating } from "@/components/ui/star-rating";
 import { PriceDisplay } from "@/components/ui/price-display";
-import { providers as allProviders, categories } from "@/lib/mock-data";
+import { providers as allProviders, categories, categoryGroups } from "@/lib/mock-data";
 import { toggleFavorite } from "@/lib/data-access";
 import { cn } from "@/lib/utils";
 import type { Provider } from "@/types";
 
-const ALL_WILAYAS = [...new Set(allProviders.map(p => p.location.wilaya))].sort();
+// ─── 10 wilayas clés d'Algérie ───────────────────────────────────
+const TOP_WILAYAS = [
+  "Alger", "Oran", "Constantine", "Annaba", "Sétif",
+  "Blida", "Tizi Ouzou", "Béjaïa", "Tlemcen", "Mostaganem",
+];
+
 const SORT_OPTIONS = [
   { value: "popularity", label: "Popularité" },
   { value: "price_asc", label: "Prix croissant" },
@@ -25,13 +30,19 @@ const SORT_OPTIONS = [
   { value: "rating", label: "Note" },
 ] as const;
 
-const CATEGORY_PILLS = ["salle-des-fetes", "traiteur", "neggafa", "photographe", "orchestre", "robe-mariee", "dj-mariage", "decoration-salle", "hammam", "henne-artiste", "videaste", "wedding-planner"]
-  .map(id => categories.find(c => c.id === id))
-  .filter(Boolean);
+// ─── Genres (familles) avec leurs sous-catégories ────────────────
+const GENRE_ICONS: Record<string, React.ReactNode> = {
+  "Lieu & Réception": <Building2 size={18} />,
+  "Image & Souvenir": <Camera size={18} />,
+  "Musique & Ambiance": <Music size={18} />,
+  "Beauté & Style": <Sparkles size={18} />,
+  "Transport & Logistique": <Car size={18} />,
+  "Organisation": <ClipboardList size={18} />,
+};
 
 export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedWilaya, setSelectedWilaya] = useState<string | null>(null);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(500000);
@@ -55,7 +66,12 @@ export default function MarketplacePage() {
       const q = searchQuery.toLowerCase();
       result = result.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.location.wilaya.toLowerCase().includes(q));
     }
-    if (selectedCategory) result = result.filter(p => p.category === selectedCategory);
+    if (selectedGenre) {
+      const group = categoryGroups.find(g => g.name === selectedGenre);
+      if (group) {
+        result = result.filter(p => group.categories.includes(p.category));
+      }
+    }
     if (selectedWilaya) result = result.filter(p => p.location.wilaya === selectedWilaya);
     if (minPrice > 0) result = result.filter(p => p.priceRange.max >= minPrice);
     if (maxPrice < 500000) result = result.filter(p => p.priceRange.min <= maxPrice);
@@ -67,22 +83,22 @@ export default function MarketplacePage() {
       case "rating": result.sort((a, b) => b.rating - a.rating); break;
     }
     return result;
-  }, [searchQuery, selectedCategory, selectedWilaya, minPrice, maxPrice, minRating, sortBy]);
+  }, [searchQuery, selectedGenre, selectedWilaya, minPrice, maxPrice, minRating, sortBy]);
 
   const totalPages = Math.ceil(filteredProviders.length / ITEMS_PER_PAGE);
   const paginatedProviders = filteredProviders.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endIndex = Math.min(currentPage * ITEMS_PER_PAGE, filteredProviders.length);
 
-  useEffect(() => { setCurrentPage(1); }, [searchQuery, selectedCategory, selectedWilaya, sortBy, minPrice, maxPrice, minRating]);
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, selectedGenre, selectedWilaya, sortBy, minPrice, maxPrice, minRating]);
 
   const handleFavorite = (id: string) => {
     toggleFavorite(id);
     setFavorites(p => p.includes(id) ? p.filter(f => f !== id) : [...p, id]);
   };
 
-  const clearFilters = () => { setSearchQuery(""); setSelectedCategory(null); setSelectedWilaya(null); setMinPrice(0); setMaxPrice(500000); setMinRating(0); };
-  const hasActiveFilters = searchQuery || selectedCategory || selectedWilaya || minPrice > 0 || maxPrice < 500000 || minRating > 0;
+  const clearFilters = () => { setSearchQuery(""); setSelectedGenre(null); setSelectedWilaya(null); setMinPrice(0); setMaxPrice(500000); setMinRating(0); };
+  const hasActiveFilters = searchQuery || selectedGenre || selectedWilaya || minPrice > 0 || maxPrice < 500000 || minRating > 0;
 
   // Skeleton loading
   if (loading) {
@@ -123,10 +139,10 @@ export default function MarketplacePage() {
         <div className="flex items-center gap-2 text-xs md:text-sm text-navy/40 mb-1 overflow-x-auto scrollbar-hide whitespace-nowrap">
           <Link href="/" className="hover:text-gold shrink-0">Accueil</Link>
           <span className="shrink-0">/</span>
-          <span className="text-navy/60 shrink-0">{selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : "Prestataires"}</span>
+          <span className="text-navy/60 shrink-0">{selectedGenre ? selectedGenre : "Prestataires"}</span>
         </div>
         <h1 className="text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-navy">
-          {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name
+          {selectedGenre ? selectedGenre
             : searchQuery ? `Résultats pour "${searchQuery}"`
             : "Trouvez votre prestataire"}
         </h1>
@@ -135,21 +151,26 @@ export default function MarketplacePage() {
         </p>
       </div>
 
-      {/* Category Pills — scroll horizontal */}
+      {/* Category Pills — GENRES (6 familles) seulement */}
       <div className="section-container mb-4 overflow-x-auto scrollbar-hide -mx-4 px-4">
         <div className="flex items-center gap-2 pb-1 min-w-max">
-          <button onClick={() => setSelectedCategory(null)}
-            className={cn("px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all border whitespace-nowrap min-h-[36px]",
-              !selectedCategory ? "bg-gold text-white border-gold" : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold")}>
+          <button onClick={() => setSelectedGenre(null)}
+            className={cn("px-4 py-2.5 rounded-full text-xs md:text-sm font-medium transition-all border whitespace-nowrap min-h-[40px] flex items-center gap-1.5",
+              !selectedGenre ? "bg-gold text-white border-gold shadow-md shadow-gold/20" : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold")}>
             Tous
           </button>
-          {CATEGORY_PILLS.map(cat => cat && (
-            <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
-              className={cn("px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all border whitespace-nowrap min-h-[36px]",
-                selectedCategory === cat.id ? "bg-gold text-white border-gold" : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold")}>
-              {cat.name}
-            </button>
-          ))}
+          {categoryGroups.map(group => {
+            const isActive = selectedGenre === group.name;
+            const Icon = GENRE_ICONS[group.name] || null;
+            return (
+              <button key={group.name} onClick={() => setSelectedGenre(isActive ? null : group.name)}
+                className={cn("px-4 py-2.5 rounded-full text-xs md:text-sm font-medium transition-all border whitespace-nowrap min-h-[40px] flex items-center gap-1.5",
+                  isActive ? "bg-gold text-white border-gold shadow-md shadow-gold/20" : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold")}>
+                {Icon}
+                <span>{group.name}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -176,7 +197,7 @@ export default function MarketplacePage() {
               "flex items-center gap-2 h-[44px] px-4 md:px-5 rounded-xl border text-sm font-medium transition-all shrink-0",
               hasActiveFilters ? "bg-gold text-white border-gold" : "bg-white text-navy/60 border-sand hover:border-gold/30"
             )}>
-            <Filter size={16} />
+            <SlidersHorizontal size={16} />
             <span className="hidden sm:inline">Filtres</span>
             {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
           </button>
@@ -308,7 +329,7 @@ export default function MarketplacePage() {
                   <select value={selectedWilaya || ""} onChange={e => setSelectedWilaya(e.target.value || null)}
                     className="w-full px-3.5 py-3 bg-white rounded-xl text-sm border border-sand/50 focus:border-gold/50 focus:ring-2 focus:ring-gold/10 outline-none transition-all appearance-none">
                     <option value="">Toutes les wilayas</option>
-                    {ALL_WILAYAS.map(w => <option key={w} value={w}>{w}</option>)}
+                    {TOP_WILAYAS.map(w => <option key={w} value={w}>{w}</option>)}
                   </select>
                 </div>
 
@@ -340,22 +361,28 @@ export default function MarketplacePage() {
                   </div>
                 </div>
 
-                {/* Note min */}
-                <div className="bg-ivory/50 rounded-2xl p-4 space-y-2.5">
+                {/* Note min — version étoiles */}
+                <div className="bg-ivory/50 rounded-2xl p-4 space-y-3">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-navy/5 flex items-center justify-center">
-                      <Star size={12} className="text-navy/40" />
+                      <Star size={12} className="fill-gold text-gold" />
                     </div>
                     <label className="text-sm font-semibold text-navy">Note minimum</label>
                   </div>
                   <div className="grid grid-cols-5 gap-2">
-                    {[0, 3, 3.5, 4, 4.5].map(r => (
-                      <button key={r} onClick={() => setMinRating(r)}
-                        className={cn("py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95",
-                          minRating === r
+                    {[
+                      { val: 0, label: "Tous" },
+                      { val: 3, label: "⭐⭐⭐" },
+                      { val: 3.5, label: "⭐⭐⭐½" },
+                      { val: 4, label: "⭐⭐⭐⭐" },
+                      { val: 4.5, label: "⭐⭐⭐⭐½" },
+                    ].map(r => (
+                      <button key={r.val} onClick={() => setMinRating(r.val)}
+                        className={cn("py-2.5 rounded-xl text-xs md:text-sm font-medium transition-all active:scale-95",
+                          minRating === r.val
                             ? "bg-gold text-white shadow-md shadow-gold/20"
                             : "bg-white text-navy/60 border border-sand/50 hover:border-gold/30")}>
-                        {r === 0 ? "Tous" : r + "+"}
+                        {r.val === 0 ? "Tous" : r.label}
                       </button>
                     ))}
                   </div>
