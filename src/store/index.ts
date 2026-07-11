@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 //   🏗️ LELLA — Store global (Zustand)
-//   Gestion d'état légère pour la Phase 1
+//   Gestion d'état légère pour la Phase 2
 //   Prêt à remplacer/étendre avec Supabase
 // ═══════════════════════════════════════════════════════════════
 
@@ -19,19 +19,51 @@ interface AuthState {
   signup: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
   logout: () => void;
   setUser: (user: User | null) => void;
+
+  // Email verification
+  sendVerificationCode: (email: string) => Promise<string>;  // returns the code for demo
+  verifyEmailCode: (email: string, code: string) => Promise<boolean>;
+  pendingVerification: PendingVerification | null;
+  setPendingVerification: (pv: PendingVerification | null) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export interface PendingVerification {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  providerData?: ProviderSignupData;
+  code: string;
+  expiresAt: number;
+}
+
+export interface ProviderSignupData {
+  establishmentName: string;
+  category: string;
+  subcategories: string[];
+  yearsExperience: number;
+  phone: string;
+  wilaya: string;
+  commune: string;
+  shortDescription: string;
+  longDescription: string;
+  minBudget: number;
+  maxBudget: number;
+  services: string[];
+  nrc: string;
+  photos: string[];
+}
+
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
+  pendingVerification: null,
 
   login: async (email: string, _password: string) => {
     set({ isLoading: true });
-    // Simuler un délai d'API
     await new Promise(r => setTimeout(r, 800));
 
-    // Simulation : si l'email contient "admin" → admin, "provider" → provider, sinon client
     let role: UserRole = "client";
     if (email.includes("admin")) role = "admin";
     else if (email.includes("provider") || email.includes("prestataire")) role = "provider";
@@ -78,6 +110,59 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   setUser: (user) => set({ user, isAuthenticated: !!user }),
+
+  // ─── Email Verification ───────────────────────────────────
+  sendVerificationCode: async (email: string) => {
+    // Générer un code à 6 chiffres
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    // 🔜 Remplacer par un vrai service email (Supabase, Resend, etc.)
+    // Simulation : on stocke le code dans le pendingVerification
+    console.log(`[LELLA] Code de vérification pour ${email}: ${code}`);
+
+    return code;
+  },
+
+  verifyEmailCode: async (email: string, code: string) => {
+    const pv = get().pendingVerification;
+    if (!pv || pv.email !== email) return false;
+    if (Date.now() > pv.expiresAt) return false;
+    if (pv.code !== code) return false;
+
+    // Code valide → créer le compte
+    const role = pv.role;
+    const user: User = {
+      id: `user-${Math.random().toString(36).substring(2, 8)}`,
+      email,
+      name: pv.name,
+      role,
+      ...(role === "provider" && pv.providerData ? {
+        providerProfile: {
+          name: pv.providerData.establishmentName,
+          category: pv.providerData.category,
+          services: pv.providerData.services,
+          priceRange: { min: pv.providerData.minBudget, max: pv.providerData.maxBudget },
+          location: { wilaya: pv.providerData.wilaya, commune: pv.providerData.commune },
+          phone: pv.providerData.phone,
+          description: pv.providerData.shortDescription,
+          yearsExperience: pv.providerData.yearsExperience,
+        }
+      } : {}),
+      createdAt: new Date().toISOString(),
+    };
+
+    set({ user, isAuthenticated: true, isLoading: false, pendingVerification: null });
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lella_user", JSON.stringify(user));
+      if (role === "provider" && pv.providerData) {
+        localStorage.setItem("lella_provider_data", JSON.stringify(pv.providerData));
+      }
+    }
+    return true;
+  },
+
+  setPendingVerification: (pv) => set({ pendingVerification: pv }),
 }));
 
 // ─── UI Store ──────────────────────────────────────────────────
