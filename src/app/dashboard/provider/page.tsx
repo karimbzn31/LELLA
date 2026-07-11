@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "@/store";
 import {
   Eye, MessageSquare, CalendarCheck, TrendingUp, Store, Image,
   DollarSign, Star, Settings, LogOut, Camera, Plus, X, Check,
@@ -55,8 +57,15 @@ const GALLERY_IMAGES = [null, null, null, null, null, null];
 const WILAYAS_LIST = ["Alger", "Oran", "Constantine", "Annaba", "Sétif", "Blida", "Tizi Ouzou", "Béjaïa", "Tlemcen", "Mostaganem"];
 
 export default function ProviderDashboard() {
+  const router = useRouter();
+  const { logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState("overview");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   // ─── Profile state ────────────────────────────────────────────
   const [profile, setProfile] = useState({
@@ -132,7 +141,8 @@ export default function ProviderDashboard() {
         <nav className="flex-1 space-y-1">
           {NAV_ITEMS.map(item => <SidebarLink key={item.id} {...item} />)}
         </nav>
-        <button className="flex items-center gap-3 px-4 py-3 text-sm text-navy/40 hover:text-error transition-colors mt-4 border-t border-sand/30 pt-4">
+        <button onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-3 text-sm text-navy/40 hover:text-error transition-colors w-full mt-4 border-t border-sand/30 pt-4">
           <LogOut size={18} /> Déconnexion
         </button>
       </aside>

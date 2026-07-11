@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, CalendarCheck, FileText, Heart, MessageSquare,
   User, Settings, LogOut, Store, Users, BarChart3, Shield,
@@ -46,7 +46,13 @@ const adminLinks: SidebarItem[] = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   const role = user?.role || "client";
   const links =
@@ -80,7 +86,7 @@ export function DashboardSidebar() {
 
         <div className="mt-8 pt-6 border-t border-sand/50">
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2.5 text-sm text-navy/40 hover:text-error transition-colors w-full"
           >
             <LogOut size={18} />
