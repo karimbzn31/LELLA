@@ -5,8 +5,6 @@ import { cn } from "@/lib/utils";
 
 const HERO_IMAGES = [
   "/images/hero-dark-wedding.jpg",
-  "/images/hero-wedding.jpg",
-  "/images/hero-bride-2.jpg",
   "/images/hero-couple.jpg",
   "/images/hero-details.jpg",
   "/images/hero-night.jpg",
