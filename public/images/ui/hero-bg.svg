@@ -1,0 +1,187 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <radialGradient id="warmGlow" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0%" stop-color="#E8D5A3" stop-opacity="0.15"/>
+      <stop offset="40%" stop-color="#C7A45D" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#0D0D1A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D0D1A"/>
+      <stop offset="40%" stop-color="#1A1A2E"/>
+      <stop offset="100%" stop-color="#0D0D1A"/>
+    </linearGradient>
+    <linearGradient id="goldLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#C7A45D" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#C7A45D" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#C7A45D" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="heartGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#8B1A2B" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#8B1A2B" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Zellige pattern -->
+    <pattern id="zelligeBg" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M40 0 L55 15 L40 30 L25 15Z" stroke="#C7A45D" stroke-width="0.2" fill="none" opacity="0.04"/>
+      <path d="M40 40 L55 55 L40 70 L25 55Z" stroke="#C7A45D" stroke-width="0.2" fill="none" opacity="0.04"/>
+    </pattern>
+
+    <!-- Petal filter -->
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="900" fill="url(#bgGrad)"/>
+  <rect width="1440" height="900" fill="url(#zelligeBg)"/>
+
+  <!-- Warm glow from center -->
+  <rect width="1440" height="900" fill="url(#warmGlow)"/>
+
+  <!-- Heart glow -->
+  <circle cx="720" cy="380" r="300" fill="url(#heartGlow)"/>
+
+  <!-- Decorative gold lines -->
+  <rect x="0" y="0" width="1440" height="1" fill="url(#goldLine)" opacity="0.4"/>
+  <rect x="0" y="898" width="1440" height="1" fill="url(#goldLine)" opacity="0.4"/>
+
+  <!-- ============================================================ -->
+  <!-- ===== COUPLE SCENE — BRIDE & GROOM IN TRADITIONAL ATTIRE ==== -->
+  <!-- ============================================================ -->
+  <g transform="translate(720, 380)">
+
+    <!-- ===== BRIDE (left side) ===== -->
+    <g transform="translate(-80, 0)">
+      <!-- Traditional dress - Karakou/Lehfa shape -->
+      <path d="M-25 180 L-30 50 Q-32 10 -15 -20 Q-5 -35 10 -40 Q25 -35 35 -20 Q52 10 50 50 L45 180 Z"
+            fill="#1A1A2E" opacity="0.35"/>
+      <path d="M-23 180 L-28 55 Q-30 15 -13 -15 Q-3 -29 10 -33 Q23 -29 33 -15 Q50 15 48 55 L43 180 Z"
+            fill="#C7A45D" opacity="0.08"/>
+
+      <!-- Dress details - golden embroidery lines -->
+      <path d="M-20 60 Q10 55 40 60" stroke="#C7A45D" stroke-width="0.3" opacity="0.15"/>
+      <path d="M-18 80 Q10 74 38 80" stroke="#C7A45D" stroke-width="0.3" opacity="0.12"/>
+      <path d="M-16 100 Q10 93 36 100" stroke="#C7A45D" stroke-width="0.3" opacity="0.1"/>
+
+      <!-- Golden belt -->
+      <path d="M-22 45 Q10 38 42 45" stroke="#E8D5A3" stroke-width="0.5" opacity="0.15"/>
+
+      <!-- Neck -->
+      <path d="M-3 -40 Q0 -48 3 -40" fill="none" stroke="#C7A45D" stroke-width="0.3" opacity="0.1"/>
+
+      <!-- Head -->
+      <ellipse cx="10" cy="-60" rx="14" ry="18" fill="#C7A45D" opacity="0.08"/>
+
+      <!-- Haïk / Veil flowing -->
+      <path d="M-5 -65 Q-25 -60 -35 -45 Q-40 -35 -38 -25" fill="none" stroke="#C7A45D" stroke-width="0.4" opacity="0.08"/>
+      <path d="M25 -65 Q45 -60 55 -45 Q60 -35 58 -25" fill="none" stroke="#C7A45D" stroke-width="0.4" opacity="0.08"/>
+
+      <!-- Crown / Tiara -->
+      <path d="M0 -78 L5 -72 L10 -76 L15 -72 L20 -78" fill="none" stroke="#E8D5A3" stroke-width="0.5" opacity="0.15"/>
+
+      <!-- Arm reaching toward groom -->
+      <path d="M35 -20 Q55 -10 65 5 Q70 15 73 20" fill="none" stroke="#C7A45D" stroke-width="0.4" opacity="0.08"/>
+    </g>
+
+    <!-- ===== GROOM (right side) ===== -->
+    <g transform="translate(80, 0)">
+      <!-- Traditional suit -->
+      <path d="M-30 180 L-32 40 Q-33 10 -20 -10 Q-10 -20 0 -22 Q10 -20 20 -10 Q33 10 32 40 L30 180 Z"
+            fill="#0D0D1A" opacity="0.4"/>
+      <path d="M-28 180 L-30 45 Q-31 15 -18 -5 Q-8 -14 0 -16 Q8 -14 18 -5 Q31 15 30 45 L28 180 Z"
+            fill="#C7A45D" opacity="0.05"/>
+
+      <!-- Vest details -->
+      <path d="M-5 -16 L-5 30" stroke="#C7A45D" stroke-width="0.2" opacity="0.08"/>
+      <path d="M5 -16 L5 30" stroke="#C7A45D" stroke-width="0.2" opacity="0.08"/>
+
+      <!-- Head -->
+      <ellipse cx="0" cy="-35" rx="12" ry="14" fill="#C7A45D" opacity="0.07"/>
+
+      <!-- Arm reaching toward bride -->
+      <path d="M-30 -10 Q-50 0 -60 10 Q-65 18 -68 22" fill="none" stroke="#C7A45D" stroke-width="0.4" opacity="0.08"/>
+    </g>
+
+    <!-- ===== HANDS MEETING (between them) ===== -->
+    <g opacity="0.12">
+      <ellipse cx="-8" cy="20" rx="4" ry="6" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+      <ellipse cx="8" cy="20" rx="4" ry="6" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+
+      <!-- Sparkle between hands -->
+      <circle cx="0" cy="18" r="2" fill="#E8D5A3" filter="url(#softGlow)"/>
+    </g>
+
+    <!-- ===== HEART ABOVE THE COUPLE ===== -->
+    <g transform="translate(0, -80)">
+      <!-- Heart outline -->
+      <path d="M0 -20 Q-20 -40 -20 -15 Q-20 0 0 15 Q20 0 20 -15 Q20 -40 0 -20Z"
+            fill="none" stroke="#C7A45D" stroke-width="0.6" opacity="0.2"/>
+
+      <!-- Inner heart -->
+      <path d="M0 -14 Q-14 -30 -14 -12 Q-14 0 0 10 Q14 0 14 -12 Q14 -30 0 -14Z"
+            fill="#C7A45D" opacity="0.06"/>
+
+      <!-- Star in heart -->
+      <text x="0" y="-2" text-anchor="middle" fill="#E8D5A3" font-size="10" font-family="serif" opacity="0.3">✦</text>
+    </g>
+
+    <!-- ===== FLOATING ROSE PETALS ===== -->
+    <g opacity="0.08">
+      <!-- Petal 1 -->
+      <ellipse cx="-120" cy="-40" rx="6" ry="3" fill="#8B1A2B" transform="rotate(-15 -120 -40)"/>
+      <!-- Petal 2 -->
+      <ellipse cx="130" cy="-30" rx="5" ry="2.5" fill="#8B1A2B" transform="rotate(20 130 -30)"/>
+      <!-- Petal 3 -->
+      <ellipse cx="-100" cy="60" rx="4" ry="2" fill="#8B1A2B" transform="rotate(-30 -100 60)"/>
+      <!-- Petal 4 -->
+      <ellipse cx="110" cy="50" rx="5" ry="2.5" fill="#8B1A2B" transform="rotate(10 110 50)"/>
+      <!-- Petal 5 -->
+      <ellipse cx="-140" cy="10" rx="4" ry="2" fill="#8B1A2B" transform="rotate(-40 -140 10)"/>
+      <!-- Petal 6 -->
+      <ellipse cx="150" cy="15" rx="5" ry="2" fill="#8B1A2B" transform="rotate(25 150 15)"/>
+    </g>
+
+    <!-- ===== DECORATIVE ARCH ===== -->
+    <g opacity="0.1">
+      <path d="M-180 -120 Q-200 20 -180 160" stroke="#C7A45D" stroke-width="0.5" fill="none"/>
+      <path d="M180 -120 Q200 20 180 160" stroke="#C7A45D" stroke-width="0.5" fill="none"/>
+      <path d="M-180 -120 Q0 -180 180 -120" stroke="#C7A45D" stroke-width="0.5" fill="none"/>
+
+      <!-- Arch decorations -->
+      <circle cx="-180" cy="-120" r="4" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+      <circle cx="180" cy="-120" r="4" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+
+      <!-- Arabic lamp / lantern hanging -->
+      <path d="M-160 -100 L-160 -80" stroke="#C7A45D" stroke-width="0.3"/>
+      <path d="M-165 -80 L-155 -80 L-158 -60 L-162 -60 Z" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+
+      <path d="M160 -100 L160 -80" stroke="#C7A45D" stroke-width="0.3"/>
+      <path d="M155 -80 L165 -80 L162 -60 L158 -60 Z" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+    </g>
+
+    <!-- ===== SMALL STARS / SPARKLES ===== -->
+    <g opacity="0.06">
+      <text x="-170" y="-60" fill="#E8D5A3" font-size="8" font-family="serif">✦</text>
+      <text x="170" y="-50" fill="#E8D5A3" font-size="10" font-family="serif">✦</text>
+      <text x="-60" y="-110" fill="#E8D5A3" font-size="6" font-family="serif">✦</text>
+      <text x="60" y="-115" fill="#E8D5A3" font-size="7" font-family="serif">✦</text>
+      <text x="-190" y="80" fill="#E8D5A3" font-size="6" font-family="serif">✦</text>
+      <text x="190" y="90" fill="#E8D5A3" font-size="8" font-family="serif">✦</text>
+    </g>
+  </g>
+
+  <!-- ===== GROUND / BASE ===== -->
+  <path d="M0 760 Q360 740 720 750 Q1080 760 1440 750 L1440 900 L0 900 Z"
+        fill="#0D0D1A" opacity="0.5"/>
+
+  <!-- Bottom ornament line -->
+  <path d="M520 770 Q600 762 680 770 Q720 776 760 770 Q840 762 920 770"
+        stroke="#C7A45D" stroke-width="0.4" fill="none" opacity="0.1"/>
+  <path d="M540 776 Q610 770 680 776 Q720 780 760 776 Q830 770 900 776"
+        stroke="#C7A45D" stroke-width="0.3" fill="none" opacity="0.06"/>
+
+  <!-- Bottom fade -->
+  <rect x="0" y="780" width="1440" height="120" fill="url(#bgGrad)" opacity="0.7"/>
+</svg>

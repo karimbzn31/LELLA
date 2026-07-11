@@ -1,0 +1,62 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FBF7F0"/>
+      <stop offset="100%" stop-color="#F5E6D3"/>
+    </linearGradient>
+    <pattern id="subtleZellige" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M30 0L45 15L30 30L15 15Z" stroke="#C7A45D" stroke-width="0.2" fill="none" opacity="0.08"/>
+      <path d="M30 30L45 45L30 60L15 45Z" stroke="#C7A45D" stroke-width="0.2" fill="none" opacity="0.08"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect width="800" height="600" fill="url(#subtleZellige)"/>
+
+  <!-- Decorative border -->
+  <rect x="30" y="30" width="740" height="540" rx="12" fill="none" stroke="#C7A45D" stroke-width="0.3" opacity="0.2"/>
+  <rect x="40" y="40" width="720" height="520" rx="8" fill="none" stroke="#C7A45D" stroke-width="0.2" opacity="0.12"/>
+  <rect x="50" y="50" width="700" height="500" rx="6" fill="none" stroke="#C7A45D" stroke-width="0.15" opacity="0.08"/>
+
+  <!-- Couple silhouette -->
+  <g opacity="0.12">
+    <!-- Bride -->
+    <path d="M340 520 L330 380 Q325 340 340 310 Q350 290 370 280 L390 280 L400 290 Q410 310 410 340 L420 380 L410 520 Z"
+          fill="#8B1A2B"/>
+    <circle cx="375" cy="265" r="22" fill="#8B1A2B"/>
+    <!-- Veil -->
+    <path d="M355 270 Q340 290 335 330 Q338 340 345 335 Q350 320 360 310"
+          fill="none" stroke="#8B1A2B" stroke-width="0.8" opacity="0.5"/>
+    <path d="M395 270 Q410 290 415 330 Q412 340 405 335 Q400 320 390 310"
+          fill="none" stroke="#8B1A2B" stroke-width="0.8" opacity="0.5"/>
+    <!-- Groom -->
+    <path d="M400 280 Q405 260 415 250 Q430 245 445 250 Q455 260 460 280 L460 520 L400 520 Z"
+          fill="#1A1A2E"/>
+    <circle cx="430" cy="235" r="18" fill="#1A1A2E"/>
+  </g>
+
+  <!-- Decorative archway -->
+  <path d="M200 500 Q200 200 400 150 Q600 200 600 500"
+        stroke="#C7A45D" stroke-width="0.5" fill="none" opacity="0.15"/>
+  <path d="M220 500 Q220 215 400 168 Q580 215 580 500"
+        stroke="#C7A45D" stroke-width="0.3" fill="none" opacity="0.08"/>
+
+  <!-- Lanterns -->
+  <g opacity="0.1">
+    <path d="M250 180 L250 200 L240 210 L260 210 L250 200" fill="none" stroke="#C7A45D" stroke-width="0.5"/>
+    <path d="M550 180 L550 200 L540 210 L560 210 L550 200" fill="none" stroke="#C7A45D" stroke-width="0.5"/>
+    <path d="M250 210 L250 240" stroke="#C7A45D" stroke-width="0.3"/>
+    <path d="M550 210 L550 240" stroke="#C7A45D" stroke-width="0.3"/>
+  </g>
+
+  <!-- Small decorative stars -->
+  <g opacity="0.06">
+    <text x="100" y="120" fill="#C7A45D" font-size="24" font-family="serif">✦</text>
+    <text x="700" y="140" fill="#C7A45D" font-size="20" font-family="serif">✦</text>
+    <text x="150" y="450" fill="#C7A45D" font-size="16" font-family="serif">✦</text>
+    <text x="650" y="430" fill="#C7A45D" font-size="18" font-family="serif">✦</text>
+  </g>
+
+  <!-- Bottom divider -->
+  <line x1="200" y1="560" x2="600" y2="560" stroke="#C7A45D" stroke-width="0.3" opacity="0.15"/>
+  <circle cx="400" cy="560" r="3" fill="#C7A45D" opacity="0.15"/>
+</svg>

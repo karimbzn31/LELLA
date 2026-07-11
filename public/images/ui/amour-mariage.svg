@@ -1,0 +1,93 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="0.5" cy="0.4" r="0.5">
+      <stop offset="0%" stop-color="#E8D5A3" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0D0D1A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D0D1A"/>
+      <stop offset="100%" stop-color="#1A1A2E"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#bgGrad)"/>
+  <rect width="800" height="600" fill="url(#bgGlow)"/>
+
+  <!-- Grand arch décoratif -->
+  <path d="M100 500 Q100 100 400 50 Q700 100 700 500" stroke="#C7A45D" stroke-width="0.5" fill="none" opacity="0.12"/>
+  <path d="M120 500 Q120 115 400 68 Q680 115 680 500" stroke="#C7A45D" stroke-width="0.3" fill="none" opacity="0.08"/>
+
+  <!-- Cœur central lumineux -->
+  <g filter="url(#glow)">
+    <path d="M400 340 Q350 300 350 330 Q350 355 400 380 Q450 355 450 330 Q450 300 400 340Z" fill="#8B1A2B" opacity="0.15"/>
+  </g>
+  <path d="M400 340 Q355 305 355 330 Q355 352 400 375 Q445 352 445 330 Q445 305 400 340Z" fill="none" stroke="#C7A45D" stroke-width="0.4" opacity="0.2"/>
+
+  <!-- Bride silhouette - left -->
+  <g opacity="0.3">
+    <path d="M280 500 L270 350 Q268 320 280 295 Q288 280 300 275 L310 275 Q320 280 325 295 Q335 320 333 350 L323 500Z" fill="#C7A45D"/>
+    <ellipse cx="305" cy="260" rx="12" ry="15" fill="#C7A45D" opacity="0.15"/>
+    <!-- Voile -->
+    <path d="M295 260 Q280 270 275 290 Q278 295 285 288 Q290 278 298 272" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+    <path d="M315 260 Q330 270 335 290 Q332 295 325 288 Q320 278 312 272" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+    <!-- Robe détails -->
+    <path d="M278 370 Q305 362 332 370" fill="none" stroke="#E8D5A3" stroke-width="0.2" opacity="0.2"/>
+    <path d="M276 400 Q305 392 334 400" fill="none" stroke="#E8D5A3" stroke-width="0.2" opacity="0.15"/>
+  </g>
+
+  <!-- Bride silhouette - right -->
+  <g opacity="0.3">
+    <path d="M477 500 L467 350 Q465 320 477 295 Q485 280 497 275 L507 275 Q517 280 525 295 Q537 320 535 350 L525 500Z" fill="#C7A45D"/>
+    <ellipse cx="502" cy="260" rx="12" ry="15" fill="#C7A45D" opacity="0.15"/>
+    <path d="M492 260 Q477 270 472 290 Q475 295 482 288 Q487 278 495 272" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+    <path d="M512 260 Q527 270 532 290 Q529 295 522 288 Q517 278 509 272" fill="none" stroke="#C7A45D" stroke-width="0.3"/>
+    <path d="M475 370 Q502 362 529 370" fill="none" stroke="#E8D5A3" stroke-width="0.2" opacity="0.2"/>
+    <path d="M473 400 Q502 392 531 400" fill="none" stroke="#E8D5A3" stroke-width="0.2" opacity="0.15"/>
+  </g>
+
+  <!-- Bride center - plus grande, plus détaillée -->
+  <g opacity="0.4">
+    <!-- Robe principale -->
+    <path d="M375 520 L365 380 Q363 345 378 315 Q388 298 400 292 Q412 298 422 315 Q437 345 435 380 L425 520Z" fill="#1A1A2E"/>
+    <!-- Broderies robe -->
+    <path d="M370 410 Q400 400 430 410" fill="none" stroke="#C7A45D" stroke-width="0.3" opacity="0.15"/>
+    <path d="M368 440 Q400 429 432 440" fill="none" stroke="#C7A45D" stroke-width="0.3" opacity="0.12"/>
+    <path d="M366 470 Q400 458 434 470" fill="none" stroke="#C7A45D" stroke-width="0.3" opacity="0.1"/>
+    <!-- Tête -->
+    <ellipse cx="400" cy="275" rx="13" ry="16" fill="#C7A45D" opacity="0.1"/>
+    <!-- Diadème -->
+    <path d="M390 261 L394 255 L400 260 L406 255 L410 261" fill="none" stroke="#E8D5A3" stroke-width="0.4" opacity="0.2"/>
+    <!-- Voile de mariée -->
+    <path d="M388 270 Q370 278 362 305 Q365 310 374 300 Q380 288 390 280" fill="none" stroke="#C7A45D" stroke-width="0.3" opacity="0.08"/>
+    <path d="M412 270 Q430 278 438 305 Q435 310 426 300 Q420 288 410 280" fill="none" stroke="#C7A45D" stroke-width="0.3" opacity="0.08"/>
+    <!-- Ceinture dorée -->
+    <path d="M378 380 Q400 373 422 380" stroke="#E8D5A3" stroke-width="0.5" opacity="0.15"/>
+  </g>
+
+  <!-- Pétales de roses tombant -->
+  <g opacity="0.06">
+    <ellipse cx="200" cy="150" rx="8" ry="4" fill="#8B1A2B" transform="rotate(-20 200 150)"/>
+    <ellipse cx="600" cy="180" rx="7" ry="3.5" fill="#8B1A2B" transform="rotate(15 600 180)"/>
+    <ellipse cx="150" cy="300" rx="6" ry="3" fill="#8B1A2B" transform="rotate(-35 150 300)"/>
+    <ellipse cx="650" cy="280" rx="5" ry="2.5" fill="#8B1A2B" transform="rotate(25 650 280)"/>
+    <ellipse cx="250" cy="420" rx="7" ry="3.5" fill="#8B1A2B" transform="rotate(-10 250 420)"/>
+    <ellipse cx="580" cy="400" rx="6" ry="3" fill="#8B1A2B" transform="rotate(30 580 400)"/>
+  </g>
+
+  <!-- Étoiles / diamants décoratifs -->
+  <g opacity="0.05">
+    <text x="150" y="100" fill="#E8D5A3" font-size="20" font-family="serif">✦</text>
+    <text x="650" y="120" fill="#E8D5A3" font-size="16" font-family="serif">✦</text>
+    <text x="300" y="180" fill="#E8D5A3" font-size="12" font-family="serif">✦</text>
+    <text x="500" y="170" fill="#E8D5A3" font-size="14" font-family="serif">✦</text>
+    <text x="180" y="500" fill="#E8D5A3" font-size="10" font-family="serif">✦</text>
+    <text x="620" y="520" fill="#E8D5A3" font-size="12" font-family="serif">✦</text>
+  </g>
+
+  <!-- Ornement inférieur -->
+  <path d="M300 560 Q350 548 400 560 Q450 548 500 560" stroke="#C7A45D" stroke-width="0.4" fill="none" opacity="0.1"/>
+  <path d="M320 568 Q360 558 400 568 Q440 558 480 568" stroke="#C7A45D" stroke-width="0.3" fill="none" opacity="0.06"/>
+  <text x="400" y="580" text-anchor="middle" fill="#C7A45D" font-size="8" font-family="serif" opacity="0.08">✦ ✦ ✦</text>
+</svg>
