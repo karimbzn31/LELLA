@@ -215,6 +215,23 @@
   100% { transform: scale(1.08); }
 }
 
+/* ─── Hero image responsive ──────────────────────────────────── */
+.hero-image {
+  background-size: cover;
+  background-position: center 30%;
+}
+@media (max-width: 640px) {
+  .hero-image {
+    background-position: 45% 20%;
+    background-size: auto 100%;
+  }
+}
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-image {
+    background-position: center 25%;
+  }
+}
+
 /* ─── Mobile First Utilities ─────────────────────────────────── */
 @layer utilities {
   /* Hide scrollbar for horizontal scroll on mobile */
