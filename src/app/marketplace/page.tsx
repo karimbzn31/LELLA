@@ -4,9 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, SlidersHorizontal, MapPin, Grid3X3, List,
-  X, ArrowUpDown, Heart, ChevronLeft, ChevronRight,
-  Star, Sparkles, Filter,
+  Search, MapPin, Grid3X3, List, X, ArrowUpDown, Heart,
+  ChevronLeft, ChevronRight, Star, SlidersHorizontal, Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,11 +19,15 @@ import type { Provider } from "@/types";
 
 const ALL_WILAYAS = [...new Set(allProviders.map(p => p.location.wilaya))].sort();
 const SORT_OPTIONS = [
-  { value: "popularity", label: "Popularite" },
+  { value: "popularity", label: "Popularité" },
   { value: "price_asc", label: "Prix croissant" },
-  { value: "price_desc", label: "Prix decroissant" },
+  { value: "price_desc", label: "Prix décroissant" },
   { value: "rating", label: "Note" },
 ] as const;
+
+const CATEGORY_PILLS = ["salle-des-fetes", "traiteur", "neggafa", "photographe", "orchestre", "robe-mariee", "dj-mariage", "decoration-salle", "hammam", "henne-artiste", "videaste", "wedding-planner"]
+  .map(id => categories.find(c => c.id === id))
+  .filter(Boolean);
 
 export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,64 +38,39 @@ export default function MarketplacePage() {
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState<"popularity" | "price_asc" | "price_desc" | "rating">("popularity");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [showFilters, setShowFilters] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const ITEMS_PER_PAGE = 9;
+  const ITEMS_PER_PAGE = 6;
   const [favorites, setFavorites] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     return JSON.parse(localStorage.getItem("lella_favorites") || "[]");
   });
 
-  // Simuler un chargement
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(t);
-  }, []);
+  useEffect(() => { const t = setTimeout(() => setLoading(false), 500); return () => clearTimeout(t); }, []);
 
-  // Categories en tete
-  const categoryPills = useMemo(() => {
-    const featured = ["salle-des-fetes", "traiteur", "neggafa", "photographe", "orchestre", "robe-mariee", "dj-mariage", "decoration-salle", "hammam", "henne-artiste", "videaste", "wedding-planner"];
-    return featured.map(id => categories.find(c => c.id === id)).filter(Boolean);
-  }, []);
-
-  // Filtrage
   const filteredProviders = useMemo(() => {
     let result = [...allProviders];
-
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tags.some(t => t.toLowerCase().includes(q)) ||
-        p.location.wilaya.toLowerCase().includes(q)
-      );
+      result = result.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.tags.some(t => t.toLowerCase().includes(q)) || p.location.wilaya.toLowerCase().includes(q));
     }
-
     if (selectedCategory) result = result.filter(p => p.category === selectedCategory);
     if (selectedWilaya) result = result.filter(p => p.location.wilaya === selectedWilaya);
     if (minPrice > 0) result = result.filter(p => p.priceRange.max >= minPrice);
     if (maxPrice < 500000) result = result.filter(p => p.priceRange.min <= maxPrice);
     if (minRating > 0) result = result.filter(p => p.rating >= minRating);
-
     switch (sortBy) {
       case "popularity": result.sort((a, b) => b.reviewCount - a.reviewCount); break;
       case "price_asc": result.sort((a, b) => a.priceRange.min - b.priceRange.min); break;
       case "price_desc": result.sort((a, b) => b.priceRange.min - a.priceRange.min); break;
       case "rating": result.sort((a, b) => b.rating - a.rating); break;
     }
-
     return result;
   }, [searchQuery, selectedCategory, selectedWilaya, minPrice, maxPrice, minRating, sortBy]);
 
-  // Pagination
   const totalPages = Math.ceil(filteredProviders.length / ITEMS_PER_PAGE);
-  const paginatedProviders = filteredProviders.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const paginatedProviders = filteredProviders.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endIndex = Math.min(currentPage * ITEMS_PER_PAGE, filteredProviders.length);
 
@@ -103,108 +81,32 @@ export default function MarketplacePage() {
     setFavorites(p => p.includes(id) ? p.filter(f => f !== id) : [...p, id]);
   };
 
-  const clearFilters = () => {
-    setSearchQuery("");
-    setSelectedCategory(null);
-    setSelectedWilaya(null);
-    setMinPrice(0);
-    setMaxPrice(500000);
-    setMinRating(0);
-  };
-
+  const clearFilters = () => { setSearchQuery(""); setSelectedCategory(null); setSelectedWilaya(null); setMinPrice(0); setMaxPrice(500000); setMinRating(0); };
   const hasActiveFilters = searchQuery || selectedCategory || selectedWilaya || minPrice > 0 || maxPrice < 500000 || minRating > 0;
 
-  const BudgetRange = () => (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-navy/60">Budget</span>
-        <span className="text-sm font-medium text-gold">
-          {minPrice.toLocaleString()} - {maxPrice.toLocaleString()} DZD
-        </span>
-      </div>
-      <div className="flex items-center gap-3">
-        <input
-          type="range"
-          min={0}
-          max={500000}
-          step={10000}
-          value={minPrice}
-          onChange={e => setMinPrice(Number(e.target.value))}
-          className="flex-1 accent-gold h-1.5"
-        />
-        <input
-          type="range"
-          min={0}
-          max={500000}
-          step={10000}
-          value={maxPrice}
-          onChange={e => setMaxPrice(Number(e.target.value))}
-          className="flex-1 accent-gold h-1.5"
-        />
-      </div>
-    </div>
-  );
-
-  const FilterContent = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={cn("space-y-6", mobile && "p-6")}>
-      {/* Wilaya filter */}
-      <div className="space-y-3">
-        <label className="text-sm font-medium text-navy/80">Wilaya</label>
-        <select
-          value={selectedWilaya || ""}
-          onChange={e => setSelectedWilaya(e.target.value || null)}
-          className="input-premium w-full"
-        >
-          <option value="">Toutes les wilayas</option>
-          {ALL_WILAYAS.map(w => (
-            <option key={w} value={w}>{w}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Budget */}
-      <BudgetRange />
-
-      {/* Note minimum */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-navy/80">Note minimum</label>
-        <div className="flex items-center gap-2">
-          {[0, 3, 3.5, 4, 4.5].map(r => (
-            <button
-              key={r}
-              onClick={() => setMinRating(r)}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-sm transition-all",
-                minRating === r
-                  ? "bg-gold text-white"
-                  : "bg-ivory text-navy/60 hover:bg-gold/10"
-              )}
-            >
-              {r === 0 ? "Tous" : r + "+"}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  // Skeleton
+  // Skeleton loading
   if (loading) {
     return (
-      <div className="pt-24 md:pt-28 pb-16">
-        <div className="section-container mb-8">
-          <div className="h-10 w-64 bg-ivory rounded-lg animate-pulse mb-2" />
-          <div className="h-5 w-40 bg-ivory rounded-lg animate-pulse" />
+      <div className="pt-24 pb-16 min-h-screen bg-ivory">
+        <div className="section-container mb-6">
+          <div className="h-5 w-40 bg-white rounded-lg animate-pulse mb-1" />
+          <div className="h-8 w-56 bg-white rounded-lg animate-pulse" />
+        </div>
+        <div className="section-container mb-6">
+          <div className="flex gap-2 pb-2">
+            {[1,2,3,4,5].map(i => <div key={i} className="h-9 w-24 bg-white rounded-full animate-pulse shrink-0" />)}
+          </div>
+          <div className="mt-3 h-12 w-full bg-white rounded-xl animate-pulse" />
         </div>
         <div className="section-container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-2xl overflow-hidden">
-                <div className="h-48 bg-ivory animate-pulse" />
-                <div className="p-5 space-y-3">
-                  <div className="h-5 w-3/4 bg-ivory rounded animate-pulse" />
-                  <div className="h-4 w-1/2 bg-ivory rounded animate-pulse" />
-                  <div className="h-4 w-2/3 bg-ivory rounded animate-pulse" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1,2,3,4].map(i => (
+              <div key={i} className="rounded-2xl overflow-hidden bg-white">
+                <div className="h-40 bg-ivory animate-pulse" />
+                <div className="p-4 space-y-2.5">
+                  <div className="h-4 w-3/4 bg-ivory rounded animate-pulse" />
+                  <div className="h-3 w-1/2 bg-ivory rounded animate-pulse" />
+                  <div className="h-3 w-2/3 bg-ivory rounded animate-pulse" />
                 </div>
               </div>
             ))}
@@ -215,225 +117,141 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="pt-24 md:pt-28 pb-16">
+    <div className="pt-20 md:pt-28 pb-24 md:pb-16 bg-ivory min-h-screen">
       {/* Header */}
-      <div className="section-container mb-6">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
-          <div>
-            <div className="flex items-center gap-2 text-sm text-navy/40 mb-1">
-              <Link href="/" className="hover:text-gold transition-colors">Accueil</Link>
-              <span>/</span>
-              <span className="text-navy/60">{selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : "Prestataires"}</span>
-            </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-navy">
-              {selectedCategory
-                ? categories.find(c => c.id === selectedCategory)?.name || "Prestataires"
-                : searchQuery
-                  ? `Resultats pour "${searchQuery}"`
-                  : "Trouvez votre prestataire"}
-            </h1>
-            <p className="text-navy/50 mt-1">
-              {filteredProviders.length} prestataire{filteredProviders.length > 1 ? "s" : ""} disponible{filteredProviders.length > 1 ? "s" : ""}
-            </p>
-          </div>
+      <div className="section-container mb-4">
+        <div className="flex items-center gap-2 text-xs md:text-sm text-navy/40 mb-1 overflow-x-auto scrollbar-hide whitespace-nowrap">
+          <Link href="/" className="hover:text-gold shrink-0">Accueil</Link>
+          <span className="shrink-0">/</span>
+          <span className="text-navy/60 shrink-0">{selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : "Prestataires"}</span>
         </div>
+        <h1 className="text-2xl md:text-4xl lg:text-5xl font-serif font-bold text-navy">
+          {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name
+            : searchQuery ? `Résultats pour "${searchQuery}"`
+            : "Trouvez votre prestataire"}
+        </h1>
+        <p className="text-xs md:text-sm text-navy/50 mt-0.5">
+          {filteredProviders.length} prestataire{filteredProviders.length > 1 ? "s" : ""} disponible{filteredProviders.length > 1 ? "s" : ""}
+        </p>
       </div>
 
-      {/* Category Pills */}
-      <div className="section-container mb-6 overflow-x-auto">
-        <div className="flex items-center gap-2 pb-2 min-w-max">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border",
-              !selectedCategory
-                ? "bg-gold text-white border-gold"
-                : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold"
-            )}
-          >
+      {/* Category Pills — scroll horizontal */}
+      <div className="section-container mb-4 overflow-x-auto scrollbar-hide -mx-4 px-4">
+        <div className="flex items-center gap-2 pb-1 min-w-max">
+          <button onClick={() => setSelectedCategory(null)}
+            className={cn("px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all border whitespace-nowrap min-h-[36px]",
+              !selectedCategory ? "bg-gold text-white border-gold" : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold")}>
             Tous
           </button>
-          {categoryPills.map(cat => cat && (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
-              className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border",
-                selectedCategory === cat.id
-                  ? "bg-gold text-white border-gold"
-                  : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold"
-              )}
-            >
+          {CATEGORY_PILLS.map(cat => cat && (
+            <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
+              className={cn("px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all border whitespace-nowrap min-h-[36px]",
+                selectedCategory === cat.id ? "bg-gold text-white border-gold" : "bg-white text-navy/60 border-sand hover:border-gold/30 hover:text-gold")}>
               {cat.name}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Search & Controls */}
-      <div className="section-container mb-6">
-        <div className="flex flex-col lg:flex-row gap-3">
-          {/* Search */}
+      {/* Search + Controls */}
+      <div className="section-container mb-4">
+        <div className="flex items-center gap-2">
+          {/* Search — full width sur mobile */}
           <div className="relative flex-1">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-navy/30" />
-            <input
-              type="text"
-              placeholder="Rechercher un prestataire, une categorie, une ville..."
-              value={searchQuery}
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-navy/30" />
+            <input type="text" placeholder="Rechercher..." value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="input-premium pl-12 pr-10 py-3 w-full"
+              className="input-premium pl-10 pr-9 py-2.5 md:py-3 text-sm w-full rounded-xl"
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/30 hover:text-navy">
-                <X size={16} />
+                <X size={15} />
               </button>
             )}
           </div>
 
-          {/* Filter Desktop */}
-          <div className="hidden lg:flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2"
-            >
-              <Filter size={16} />
-              Filtres
-              {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-gold" />}
-            </Button>
+          {/* Filter button — mobile + desktop */}
+          <button onClick={() => setShowMobileFilters(true)}
+            className={cn(
+              "flex items-center gap-2 h-[44px] px-4 md:px-5 rounded-xl border text-sm font-medium transition-all shrink-0",
+              hasActiveFilters ? "bg-gold text-white border-gold" : "bg-white text-navy/60 border-sand hover:border-gold/30"
+            )}>
+            <Filter size={16} />
+            <span className="hidden sm:inline">Filtres</span>
+            {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+          </button>
 
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value as typeof sortBy)}
-                className="input-premium appearance-none pr-10 py-3 cursor-pointer"
-              >
-                {SORT_OPTIONS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-              <ArrowUpDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/30 pointer-events-none" />
-            </div>
-
-            <div className="flex items-center border border-sand rounded-radius-button overflow-hidden">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={cn("p-3 transition-colors", viewMode === "grid" ? "bg-gold text-white" : "text-navy/40 hover:text-navy")}
-              >
-                <Grid3X3 size={18} />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={cn("p-3 transition-colors", viewMode === "list" ? "bg-gold text-white" : "text-navy/40 hover:text-navy")}
-              >
-                <List size={18} />
-              </button>
-            </div>
+          {/* Sort dropdown desktop */}
+          <div className="hidden md:block relative">
+            <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
+              className="input-premium appearance-none pr-10 py-2.5 md:py-3 cursor-pointer text-sm rounded-xl">
+              {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+            <ArrowUpDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/30 pointer-events-none" />
           </div>
 
-          {/* Mobile filter button */}
-          <Button
-            variant="outline"
-            onClick={() => setShowMobileFilters(true)}
-            className="lg:hidden flex items-center gap-2 justify-center"
-          >
-            <Filter size={16} />
-            Filtres
-            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-gold" />}
-          </Button>
+          {/* View toggle desktop */}
+          <div className="hidden md:flex items-center border border-sand rounded-xl overflow-hidden">
+            <button onClick={() => setViewMode("grid")}
+              className={cn("p-3 transition-colors", viewMode === "grid" ? "bg-gold text-white" : "text-navy/40 hover:text-navy")}>
+              <Grid3X3 size={18} />
+            </button>
+            <button onClick={() => setViewMode("list")}
+              className={cn("p-3 transition-colors", viewMode === "list" ? "bg-gold text-white" : "text-navy/40 hover:text-navy")}>
+              <List size={18} />
+            </button>
+          </div>
         </div>
-
-        {/* Desktop filters panel */}
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-4 p-6 bg-white rounded-radius-card shadow-card border border-sand/50"
-            >
-              <FilterContent />
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Results */}
       <div className="section-container">
         {paginatedProviders.length === 0 ? (
-          <div className="text-center py-20 max-w-md mx-auto">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-ivory flex items-center justify-center">
-              <Search size={24} className="text-navy/20" />
+          <div className="text-center py-16 max-w-sm mx-auto">
+            <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-white flex items-center justify-center shadow-sm">
+              <Search size={22} className="text-navy/20" />
             </div>
-            <p className="text-navy/60 text-lg mb-2">Aucun prestataire trouve</p>
-            <p className="text-navy/30 text-sm mb-8">
-              On n a rien trouve avec ces criteres. Essayez d elargir votre recherche ou de modifier les filtres.
-            </p>
-            <Button variant="gold" onClick={clearFilters}>
-              Reinitialiser les filtres
-            </Button>
+            <p className="text-navy/60 text-base md:text-lg font-medium mb-1">Aucun prestataire trouvé</p>
+            <p className="text-navy/30 text-xs md:text-sm mb-6">Essayez d'élargir votre recherche ou de modifier les filtres.</p>
+            <Button variant="gold" size="sm" onClick={clearFilters}>Réinitialiser les filtres</Button>
           </div>
         ) : viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedProviders.map((provider, index) => (
-              <ProviderCard
-                key={provider.id}
-                provider={provider}
-                index={index}
-                isFavorite={favorites.includes(provider.id)}
-                onFavorite={() => handleFavorite(provider.id)}
-              />
+              <ProviderCard key={provider.id} provider={provider} index={index}
+                isFavorite={favorites.includes(provider.id)} onFavorite={() => handleFavorite(provider.id)} />
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {paginatedProviders.map((provider, index) => (
-              <ProviderListItem
-                key={provider.id}
-                provider={provider}
-                index={index}
-                isFavorite={favorites.includes(provider.id)}
-                onFavorite={() => handleFavorite(provider.id)}
-              />
+              <ProviderListItem key={provider.id} provider={provider} index={index}
+                isFavorite={favorites.includes(provider.id)} onFavorite={() => handleFavorite(provider.id)} />
             ))}
           </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 pt-8 border-t border-sand/30">
-            <p className="text-sm text-navy/40">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-sand/30">
+            <p className="text-xs md:text-sm text-navy/40">
               {startIndex}–{endIndex} sur {filteredProviders.length} prestataires
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
-                className="w-9 h-9 rounded-lg border border-sand text-navy/40 hover:text-navy hover:border-gold/30 disabled:opacity-30 flex items-center justify-center transition-all">
-                <ChevronLeft size={16} />
+                className="min-w-[36px] h-9 rounded-lg border border-sand text-navy/40 hover:text-navy hover:border-gold/30 disabled:opacity-30 flex items-center justify-center transition-all">
+                <ChevronLeft size={15} />
               </button>
-              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                let page: number;
-                if (totalPages <= 5) {
-                  page = i + 1;
-                } else if (currentPage <= 3) {
-                  page = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  page = totalPages - 4 + i;
-                } else {
-                  page = currentPage - 2 + i;
-                }
-                return (
-                  <button key={page} onClick={() => setCurrentPage(page)}
-                    className={cn(
-                      "w-9 h-9 rounded-lg text-sm font-medium transition-all",
-                      page === currentPage ? "bg-gold text-white" : "text-navy/40 hover:text-navy hover:bg-ivory border border-sand"
-                    )}>
-                    {page}
-                  </button>
-                );
-              })}
+              {paginationNumbers(currentPage, totalPages).map(page => (
+                <button key={page} onClick={() => setCurrentPage(page)}
+                  className={cn("min-w-[36px] h-9 rounded-lg text-sm font-medium transition-all",
+                    page === currentPage ? "bg-gold text-white" : "text-navy/40 hover:text-navy hover:bg-ivory border border-sand")}>
+                  {page}
+                </button>
+              ))}
               <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                className="w-9 h-9 rounded-lg border border-sand text-navy/40 hover:text-navy hover:border-gold/30 disabled:opacity-30 flex items-center justify-center transition-all">
-                <ChevronRight size={16} />
+                className="min-w-[36px] h-9 rounded-lg border border-sand text-navy/40 hover:text-navy hover:border-gold/30 disabled:opacity-30 flex items-center justify-center transition-all">
+                <ChevronRight size={15} />
               </button>
             </div>
           </div>
@@ -443,35 +261,72 @@ export default function MarketplacePage() {
       {/* Mobile Filters Bottom Sheet */}
       <AnimatePresence>
         {showMobileFilters && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/30 lg:hidden"
-            onClick={() => setShowMobileFilters(false)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowMobileFilters(false)}>
+            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25 }}
               onClick={e => e.stopPropagation()}
-              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto"
-            >
+              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto pb-safe">
               <div className="sticky top-0 bg-white border-b border-sand/50 p-4 rounded-t-3xl flex items-center justify-between z-10">
-                <h3 className="font-semibold text-navy">Filtres</h3>
-                <button onClick={() => setShowMobileFilters(false)} className="p-2 text-navy/40 hover:text-navy">
+                <h3 className="font-semibold text-navy text-lg">Filtres</h3>
+                <button onClick={() => setShowMobileFilters(false)} className="p-1.5 text-navy/40 hover:text-navy">
                   <X size={20} />
                 </button>
               </div>
-              <FilterContent mobile />
+              <div className="p-5 space-y-6">
+                {/* Wilaya */}
+                <div className="space-y-2.5">
+                  <label className="text-sm font-medium text-navy/80">Wilaya</label>
+                  <select value={selectedWilaya || ""} onChange={e => setSelectedWilaya(e.target.value || null)} className="input-premium w-full text-sm">
+                    <option value="">Toutes les wilayas</option>
+                    {ALL_WILAYAS.map(w => <option key={w} value={w}>{w}</option>)}
+                  </select>
+                </div>
+                {/* Budget */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-navy/60">Budget max</span>
+                    <span className="text-sm font-medium text-gold">{maxPrice.toLocaleString()} DZD</span>
+                  </div>
+                  <input type="range" min={0} max={500000} step={10000} value={maxPrice}
+                    onChange={e => setMaxPrice(Number(e.target.value))} className="w-full accent-gold h-1.5" />
+                </div>
+                {/* Note min */}
+                <div className="space-y-2.5">
+                  <label className="text-sm font-medium text-navy/80">Note minimum</label>
+                  <div className="flex items-center gap-2">
+                    {[0, 3, 3.5, 4, 4.5].map(r => (
+                      <button key={r} onClick={() => setMinRating(r)}
+                        className={cn("flex-1 py-2.5 rounded-xl text-sm font-medium transition-all min-h-[40px]",
+                          minRating === r ? "bg-gold text-white" : "bg-ivory text-navy/60 hover:bg-gold/10")}>
+                        {r === 0 ? "Tous" : r + "+"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Tri */}
+                <div className="space-y-2.5">
+                  <label className="text-sm font-medium text-navy/80">Trier par</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SORT_OPTIONS.map(o => (
+                      <button key={o.value} onClick={() => setSortBy(o.value as typeof sortBy)}
+                        className={cn("py-2.5 rounded-xl text-sm font-medium transition-all min-h-[40px]",
+                          sortBy === o.value ? "bg-gold text-white" : "bg-ivory text-navy/60 hover:bg-gold/10")}>
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
               <div className="p-4 border-t border-sand/50 flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => { clearFilters(); setShowMobileFilters(false); }}>
-                  Reinitialiser
-                </Button>
-                <Button variant="gold" className="flex-1" onClick={() => setShowMobileFilters(false)}>
-                  Voir {filteredProviders.length} resultats
-                </Button>
+                <button onClick={() => { clearFilters(); setShowMobileFilters(false); }}
+                  className="flex-1 py-3 rounded-xl border border-sand text-navy/60 text-sm font-medium min-h-[44px]">
+                  Réinitialiser
+                </button>
+                <button onClick={() => setShowMobileFilters(false)}
+                  className="flex-1 py-3 rounded-xl gold-gradient text-white text-sm font-medium min-h-[44px]">
+                  Voir {filteredProviders.length} résultat{filteredProviders.length > 1 ? "s" : ""}
+                </button>
               </div>
             </motion.div>
           </motion.div>
@@ -481,52 +336,49 @@ export default function MarketplacePage() {
   );
 }
 
+// ─── Helper ─────────────────────────────────────────────────────
+function paginationNumbers(page: number, total: number): number[] {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  if (page <= 3) return [1, 2, 3, 4, total];
+  if (page >= total - 2) return [1, total - 3, total - 2, total - 1, total];
+  return [1, page - 1, page, page + 1, total];
+}
+
 // ─── Provider Card (Grid) ─────────────────────────────────────
 function ProviderCard({ provider, index, isFavorite, onFavorite }: {
   provider: Provider; index: number; isFavorite: boolean; onFavorite: () => void;
 }) {
   const cat = categories.find(c => c.id === provider.category);
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-    >
-      <Card className="group h-full">
-        <CardImage className="h-48 bg-gradient-to-br from-ivory to-sand">
+    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.04 }}>
+      <Card className="group h-full overflow-hidden">
+        <CardImage className="h-40 md:h-48 bg-gradient-to-br from-ivory to-sand relative">
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-gold text-4xl font-serif opacity-30">✦</span>
+            <span className="text-gold text-3xl md:text-4xl font-serif opacity-30 select-none">✦</span>
           </div>
-
           <button onClick={e => { e.preventDefault(); onFavorite(); }}
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-10"
-            aria-label="Favoris">
+            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all z-10">
             <Heart size={14} className={cn(isFavorite ? "fill-bordeaux text-bordeaux" : "text-navy/40")} />
           </button>
-
-          <div className="absolute top-3 left-3 flex gap-2">
-            {provider.isVerified && <Badge variant="gold">Verifie</Badge>}
-            {provider.isFeatured && <Badge variant="default">Coup de c ur</Badge>}
+          <div className="absolute top-2.5 left-2.5 flex gap-1.5">
+            {provider.isVerified && <Badge variant="gold" className="text-[9px] px-1.5 py-0.5">✓ Vérifié</Badge>}
+            {provider.isFeatured && <Badge variant="default" className="text-[9px] px-1.5 py-0.5">Coup de ❤</Badge>}
           </div>
         </CardImage>
-
         <Link href={`/provider/${provider.slug}`}>
-          <CardContent>
-            <div className="flex items-start justify-between mb-1">
-              <h3 className="font-serif font-semibold text-navy group-hover:text-gold transition-colors">
-                {provider.name}
-              </h3>
-              <div className="flex items-center gap-1 text-xs">
-                <Star size={12} className="fill-gold text-gold" />
-                <span className="text-navy/60 font-medium">{provider.rating}</span>
+          <CardContent className="p-3.5 md:p-5">
+            <div className="flex items-start justify-between gap-2 mb-0.5">
+              <h3 className="font-serif font-semibold text-sm md:text-base text-navy group-hover:text-gold transition-colors leading-tight">{provider.name}</h3>
+              <div className="flex items-center gap-1 shrink-0">
+                <Star size={11} className="fill-gold text-gold" />
+                <span className="text-xs text-navy/60 font-medium">{provider.rating}</span>
               </div>
             </div>
-            <p className="text-xs text-navy/40 capitalize mb-2">{cat?.name || provider.category}</p>
-            <div className="flex items-center gap-1 text-xs text-navy/40 mb-2">
-              <MapPin size={12} />
-              <span>{provider.location.wilaya}</span>
+            <p className="text-[10px] md:text-xs text-navy/40 capitalize mb-1">{cat?.name || provider.category}</p>
+            <div className="flex items-center gap-1 text-[10px] md:text-xs text-navy/40 mb-1.5">
+              <MapPin size={10} /><span>{provider.location.wilaya}</span>
             </div>
-            <p className="text-sm text-navy/60 line-clamp-2 mb-3">{provider.description}</p>
+            <p className="text-xs md:text-sm text-navy/60 line-clamp-2 mb-2.5 leading-relaxed">{provider.description}</p>
             <PriceDisplay min={provider.priceRange.min} max={provider.priceRange.max} />
           </CardContent>
         </Link>
@@ -541,46 +393,37 @@ function ProviderListItem({ provider, index, isFavorite, onFavorite }: {
 }) {
   const cat = categories.find(c => c.id === provider.category);
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
-    >
+    <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.03 }}>
       <Link href={`/provider/${provider.slug}`}>
-        <Card className="flex flex-col sm:flex-row overflow-hidden group">
-          <div className="sm:w-48 h-40 bg-gradient-to-br from-ivory to-sand relative flex-shrink-0">
+        <Card className="flex overflow-hidden group">
+          <div className="w-24 md:w-48 h-24 md:h-40 bg-gradient-to-br from-ivory to-sand relative shrink-0">
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-gold text-3xl font-serif opacity-30">✦</span>
+              <span className="text-gold text-xl md:text-3xl font-serif opacity-30">✦</span>
             </div>
             <button onClick={e => { e.preventDefault(); onFavorite(); }}
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
-              <Heart size={14} className={cn(isFavorite ? "fill-bordeaux text-bordeaux" : "text-navy/40")} />
+              className="absolute top-2 right-2 w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
+              <Heart size={11} className={cn(isFavorite ? "fill-bordeaux text-bordeaux" : "text-navy/40")} />
             </button>
-            <div className="absolute top-3 left-3 flex gap-2">
-              {provider.isVerified && <Badge variant="gold">Verifie</Badge>}
+            <div className="absolute top-2 left-2">
+              {provider.isVerified && <Badge variant="gold" className="text-[8px] px-1 py-0">✓</Badge>}
             </div>
           </div>
-          <CardContent className="flex-1 flex flex-col justify-center">
+          <CardContent className="flex-1 flex flex-col justify-center py-2.5 px-3 md:py-5 md:px-5">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="font-serif font-semibold text-navy group-hover:text-gold transition-colors">
-                  {provider.name}
-                </h3>
-                <p className="text-xs text-navy/40 capitalize">{cat?.name || provider.category}</p>
+                <h3 className="font-serif font-semibold text-sm md:text-base text-navy group-hover:text-gold transition-colors">{provider.name}</h3>
+                <p className="text-[10px] md:text-xs text-navy/40 capitalize">{cat?.name || provider.category}</p>
               </div>
-              <div className="flex items-center gap-1 text-xs">
-                <Star size={12} className="fill-gold text-gold" />
-                <span className="text-navy/60 font-medium">{provider.rating}</span>
+              <div className="flex items-center gap-1">
+                <Star size={10} className="fill-gold text-gold" />
+                <span className="text-[10px] md:text-xs text-navy/60 font-medium">{provider.rating}</span>
               </div>
             </div>
-            <div className="flex items-center gap-1 text-xs text-navy/40 mt-1">
-              <MapPin size={12} />
-              <span>{provider.location.wilaya}</span>
+            <div className="flex items-center gap-1 text-[10px] md:text-xs text-navy/40 mt-0.5">
+              <MapPin size={10} /><span>{provider.location.wilaya}</span>
             </div>
-            <p className="text-sm text-navy/50 line-clamp-1 mt-2">{provider.description}</p>
-            <div className="mt-2">
-              <PriceDisplay min={provider.priceRange.min} max={provider.priceRange.max} />
-            </div>
+            <p className="text-[10px] md:text-sm text-navy/50 line-clamp-1 mt-1">{provider.description}</p>
+            <div className="mt-1"><PriceDisplay min={provider.priceRange.min} max={provider.priceRange.max} /></div>
           </CardContent>
         </Card>
       </Link>

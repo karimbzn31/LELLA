@@ -32,7 +32,7 @@ const STEPS = [
   {
     icon: Heart,
     title: "Célébrez",
-    subtitle: "Vivez l&apos;instant, on s&apos;occupe de tout",
+    subtitle: "Vivez l'instant, on s'occupe de tout",
     color: "text-gold",
     bg: "bg-gold/10",
     border: "border-gold/30",
@@ -41,79 +41,63 @@ const STEPS = [
 
 export function HowItWorksSection() {
   const timelineRef = useRef<HTMLDivElement>(null);
-
   const { scrollYProgress } = useScroll({
     target: timelineRef,
     offset: ["start 0.75", "end 0.25"],
   });
-
   const lineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const lineOpacity = useTransform(scrollYProgress, [0, 0.3, 1], [0, 1, 1]);
 
   return (
-    <section className="py-24 md:py-32 bg-ivory relative overflow-hidden">
-      {/* Motif de fond */}
+    <section className="py-16 md:py-32 bg-ivory relative overflow-hidden">
       <div className="absolute inset-0 pattern-zellige opacity-[0.03]" />
 
       <div className="section-container relative z-10">
-        {/* Header */}
-        <div className="text-center mb-16 md:mb-20">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <span className="h-px w-8 bg-gold/50" />
+        <div className="text-center mb-12 md:mb-20">
+          <div className="flex items-center justify-center gap-3 mb-3 md:mb-4">
+            <span className="h-px w-6 md:w-8 bg-gold/50" />
             <span className="text-gold text-[10px] tracking-[0.3em] uppercase font-medium">Simple & Élégant</span>
-            <span className="h-px w-8 bg-gold/50" />
+            <span className="h-px w-6 md:w-8 bg-gold/50" />
           </div>
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-navy leading-tight">
+          <h2 className="text-2xl md:text-5xl lg:text-6xl font-serif font-bold text-navy leading-tight">
             Votre voyage commence ici
           </h2>
-          <p className="text-navy/50 text-base md:text-lg max-w-xl mx-auto mt-4">
+          <p className="text-navy/50 text-sm md:text-lg max-w-xl mx-auto mt-2 md:mt-4">
             Quatre étapes pour transformer votre rêve en réalité.
           </p>
         </div>
 
-        {/* Timeline steps */}
         <div ref={timelineRef} className="relative max-w-5xl mx-auto">
-          {/* Ligne de connexion centrale animée (desktop) */}
+          {/* Timeline ligne desktop */}
           <div className="hidden lg:block absolute top-16 left-[12.5%] right-[12.5%] h-px bg-ivory/30">
-            <motion.div
-              style={{ width: lineWidth, opacity: lineOpacity }}
-              className="h-full gold-gradient origin-left shadow-[0_0_12px_rgba(199,164,93,0.6)]"
-            />
+            <motion.div style={{ width: lineWidth }} className="h-full gold-gradient origin-left" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6">
+          {/* Mobile: 2x2 grid, desktop: 4 colonnes */}
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-6">
             {STEPS.map((step, index) => (
               <motion.div
                 key={step.title}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: index * 0.15, duration: 0.5 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ delay: index * 0.12, duration: 0.4 }}
                 className="relative flex flex-col items-center text-center group"
               >
-                {/* Cercle numéroté + icône */}
-                <div className="relative mb-6">
-                  <div className={`w-20 h-20 rounded-full ${step.bg} border ${step.border} flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-xl`}>
-                    <step.icon size={30} className={`${step.color} transition-transform duration-500`} />
+                <div className="relative mb-4 md:mb-6">
+                  <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full ${step.bg} border ${step.border} flex items-center justify-center transition-all duration-500 group-hover:scale-110`}>
+                    <step.icon size={24} className={`${step.color} transition-transform duration-500`} />
                   </div>
-                  {/* Numéro */}
-                  <div className="absolute -top-1 -right-1 w-7 h-7 rounded-full gold-gradient text-white text-[11px] font-bold flex items-center justify-center shadow-lg">
+                  <div className="absolute -top-1 -right-1 w-6 h-6 md:w-7 md:h-7 rounded-full gold-gradient text-white text-[10px] md:text-[11px] font-bold flex items-center justify-center shadow-lg">
                     {index + 1}
                   </div>
                 </div>
 
-                {/* Texte */}
-                <h3 className={`text-lg font-serif font-semibold mb-2 transition-colors duration-300 group-hover:${step.color}`}>
+                <h3 className={`text-sm md:text-lg font-serif font-semibold mb-1 md:mb-2`}>
                   {step.title}
                 </h3>
-                <p className="text-sm text-navy/50 leading-relaxed max-w-[220px]">
+                <p className="text-xs md:text-sm text-navy/50 leading-relaxed max-w-[160px] md:max-w-[220px]">
                   {step.subtitle}
                 </p>
-
-                {/* Connecteur mobile */}
-                {index < STEPS.length - 1 && (
-                  <div className="block lg:hidden w-px h-8 bg-gradient-to-b from-gold/40 to-transparent mt-4" />
-                )}
               </motion.div>
             ))}
           </div>

@@ -215,6 +215,36 @@
   100% { transform: scale(1.08); }
 }
 
+/* ─── Mobile First Utilities ─────────────────────────────────── */
+@layer utilities {
+  /* Hide scrollbar for horizontal scroll on mobile */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area for bottom nav on modern phones */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0rem);
+  }
+
+  /* Tap highlight color for mobile */
+  .tap-highlight {
+    -webkit-tap-highlight-color: rgba(199, 164, 93, 0.15);
+  }
+
+  /* Smooth snap scrolling for carousels */
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+  .snap-start {
+    scroll-snap-align: start;
+  }
+}
+
 /* ─── Responsive helpers ────────────────────────────────────── */
 @define-mixin mobile-first {
   @media (min-width: 640px) { @mixin-content; }

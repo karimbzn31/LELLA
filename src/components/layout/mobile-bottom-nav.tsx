@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Heart, Bell, User } from "lucide-react";
+import { Home, Search, Heart, User, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore, useUIStore } from "@/store";
 
 const links = [
   { label: "Accueil", href: "/", icon: Home },
   { label: "Recherche", href: "/marketplace", icon: Search },
-  { label: "Messages", href: "/messages", icon: Bell },
+  { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "Favoris", href: "/dashboard/client", icon: Heart },
   { label: "Profil", href: "/auth/login", icon: User },
 ];
@@ -19,41 +19,32 @@ export function MobileBottomNav() {
   const { isAuthenticated } = useAuthStore();
   const { unreadCount } = useUIStore();
 
-  // Ne pas afficher sur les pages dashboard (elles ont leur propre layout)
   if (pathname.startsWith("/dashboard")) return null;
 
-  const profileHref = isAuthenticated ? "/dashboard/client" : "/auth/login";
-
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-t border-sand/50">
-      <div className="flex items-center justify-around h-16">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-sand/50 pb-safe">
+      <div className="flex items-center justify-around h-14">
         {links.map((link) => {
           const Icon = link.icon;
           const href = link.href === "/auth/login" && isAuthenticated ? "/dashboard/client" : link.href;
-          const isActive =
-            pathname === href || (href !== "/" && pathname.startsWith(href));
+          const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
 
           return (
-            <Link
-              key={link.label}
-              href={href}
+            <Link key={link.label} href={href}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1.5 relative",
+                "flex flex-col items-center gap-0.5 px-3 py-1 relative min-w-[56px] min-h-[44px] justify-center",
                 isActive ? "text-gold" : "text-navy/40 hover:text-navy/60"
               )}
             >
               <div className="relative">
-                <Icon size={20} />
-                {link.label === "Activité" && unreadCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-bordeaux text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                    {unreadCount}
+                <Icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
+                {link.label === "Messages" && unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-bordeaux text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                    {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-medium">{link.label}</span>
-              {isActive && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-gold rounded-full" />
-              )}
+              <span className="text-[9px] font-medium leading-none">{link.label}</span>
             </Link>
           );
         })}
