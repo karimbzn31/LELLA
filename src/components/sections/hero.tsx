@@ -8,12 +8,12 @@ import { HeroImageRotator } from "@/components/sections/hero-image-rotator";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[90svh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#1A1A2E]">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#1A1A2E]">
       {/* Image rotator */}
       <HeroImageRotator />
 
-      {/* Overlay foncé */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy/85 via-navy/40 via-40% to-navy/95" />
+      {/* Overlay éditorial */}
+      <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/20 via-40% to-navy/90" />
 
       {/* Contenu — centré, compact sur mobile */}
       <div className="relative z-10 w-full section-container mt-16 md:mt-0">
