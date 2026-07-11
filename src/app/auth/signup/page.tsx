@@ -86,14 +86,18 @@ export default function SignupPage() {
   const [phone, setPhone] = useState("");
   const [wilaya, setWilaya] = useState("");
   const [commune, setCommune] = useState("");
-  const [shortDesc, setShortDesc] = useState("");
-  const [longDesc, setLongDesc] = useState("");
+  const [tagline, setTagline] = useState("");
   const [minBudget, setMinBudget] = useState(50000);
   const [maxBudget, setMaxBudget] = useState(300000);
   const [services, setServices] = useState<string[]>([]);
   const [nrc, setNrc] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
   const [newService, setNewService] = useState("");
+
+  // ─── Welcome modal ────────────────────────────────────────────
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [welcomeName, setWelcomeName] = useState("");
+  const [welcomeRole, setWelcomeRole] = useState<UserRole>("client");
 
   // ─── Gestion code de vérification ────────────────────────────
   const sendCode = async () => {
@@ -158,8 +162,8 @@ export default function SignupPage() {
           phone,
           wilaya,
           commune,
-          shortDescription: shortDesc,
-          longDescription: longDesc,
+          shortDescription: tagline,
+          longDescription: "",
           minBudget,
           maxBudget,
           services,
@@ -167,14 +171,24 @@ export default function SignupPage() {
           photos,
         };
         localStorage.setItem("lella_provider_data", JSON.stringify(providerData));
-        router.push("/dashboard/provider");
-      } else {
-        router.push("/dashboard/client");
       }
+      // Afficher la fenêtre de bienvenue
+      setWelcomeName(role === "provider" ? establishementName : name);
+      setWelcomeRole(role);
+      setShowWelcome(true);
     } else {
       setCodeError("Code incorrect. Essayez encore.");
       setVerificationCode(["", "", "", "", "", ""]);
       codeRefs.current[0]?.focus();
+    }
+  };
+
+  const goToDashboard = () => {
+    setShowWelcome(false);
+    if (welcomeRole === "provider") {
+      router.push("/dashboard/provider");
+    } else {
+      router.push("/dashboard/client");
     }
   };
 
@@ -192,13 +206,13 @@ export default function SignupPage() {
 
   // ─── Gestion formulaire prestataire ──────────────────────────
   const totalSteps = 4;
-  const stepLabels = ["Identité", "Contact", "Présentation", "Tarifs"];
+  const stepLabels = ["Identité", "Contact", "Visuels", "Tarifs & Services"];
 
   const canProceedStep = (s: number): boolean => {
     switch (s) {
       case 0: return establishementName.length > 0 && selectedCategory.length > 0;
       case 1: return phone.length >= 8 && wilaya.length > 0 && commune.length > 0;
-      case 2: return shortDesc.length >= 10;
+      case 2: return tagline.length >= 5;
       case 3: return services.length > 0;
       default: return false;
     }
@@ -429,41 +443,53 @@ export default function SignupPage() {
                     </motion.div>
                   )}
 
-                  {/* STEP 3: PRÉSENTATION */}
+                  {/* STEP 3: VISUELS & IDENTITÉ */}
                   {step === 2 && (
                     <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
                       <div className="text-center mb-3">
                         <div className="w-14 h-14 mx-auto mb-2 rounded-2xl bg-gold/10 flex items-center justify-center">
-                          <ImageIcon size={24} className="text-gold" />
+                          <Camera size={24} className="text-gold" />
                         </div>
-                        <h3 className="font-serif font-semibold text-navy text-base">Parlez de vous</h3>
+                        <h3 className="font-serif font-semibold text-navy text-base">Votre identité visuelle</h3>
+                        <p className="text-xs text-navy/40">Montrez qui vous êtes en un coup d'œil</p>
                       </div>
 
+                      {/* Photo principale — grande, bien mise en avant */}
                       <div>
-                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Description courte *</label>
-                        <textarea placeholder="En une phrase, ce qui vous rend unique..." value={shortDesc}
-                          onChange={e => setShortDesc(e.target.value)} maxLength={200} rows={2}
-                          className="w-full px-3.5 py-2.5 bg-ivory/50 rounded-xl text-sm border border-sand/30 focus:border-gold/50 outline-none resize-none" />
-                        <p className="text-[10px] text-navy/30 text-right mt-0.5">{shortDesc.length}/200</p>
+                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Photo de couverture *</label>
+                        <button type="button"
+                          className="w-full h-32 rounded-2xl bg-ivory/50 border-2 border-dashed border-sand/40 flex items-center justify-center hover:border-gold/30 hover:bg-gold/5 transition-all group">
+                          <div className="text-center">
+                            <Camera size={28} className="mx-auto mb-1 text-navy/20 group-hover:text-gold/40 transition-colors" />
+                            <span className="text-xs text-navy/30">Cliquez pour ajouter votre meilleure réalisation</span>
+                          </div>
+                        </button>
                       </div>
 
+                      {/* Mini galerie — 3 photos supplémentaires */}
                       <div>
-                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Description longue</label>
-                        <textarea placeholder="Parlez de votre parcours, votre équipe, votre passion..." value={longDesc}
-                          onChange={e => setLongDesc(e.target.value)} rows={3}
-                          className="w-full px-3.5 py-2.5 bg-ivory/50 rounded-xl text-sm border border-sand/30 focus:border-gold/50 outline-none resize-none" />
-                      </div>
-
-                      <div>
-                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Photos de réalisations</label>
+                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Galerie (optionnel)</label>
                         <div className="flex gap-2">
                           {[0, 1, 2].map(i => (
                             <button key={i} type="button"
-                              className="w-20 h-20 rounded-xl bg-ivory/50 border-2 border-dashed border-sand/40 flex items-center justify-center hover:border-gold/30 hover:bg-gold/5 transition-all group">
-                              <Camera size={18} className="text-navy/20 group-hover:text-gold/40" />
+                              className="flex-1 aspect-square rounded-xl bg-ivory/50 border-2 border-dashed border-sand/40 flex items-center justify-center hover:border-gold/30 hover:bg-gold/5 transition-all group">
+                              <Plus size={18} className="text-navy/20 group-hover:text-gold/40" />
                             </button>
                           ))}
-                          <p className="text-[10px] text-navy/30 self-end pb-1">Min. 1 photo</p>
+                        </div>
+                      </div>
+
+                      {/* Tagline — UNE SEULE phrase percutante */}
+                      <div>
+                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">
+                          Votre phrase d'accroche *
+                          <span className="text-gold ml-1 text-[9px]">(1 phrase)</span>
+                        </label>
+                        <div className="relative">
+                          <textarea placeholder="Ex: « Des saveurs qui racontent l'amour, depuis 15 ans au service de vos plus beaux jours. »"
+                            value={tagline} onChange={e => setTagline(e.target.value)} maxLength={150} rows={2}
+                            className="w-full px-3.5 py-2.5 bg-ivory/50 rounded-xl text-sm border border-sand/30 focus:border-gold/50 outline-none resize-none italic" />
+                          <p className="text-[10px] text-navy/30 text-right mt-0.5">{tagline.length}/150</p>
                         </div>
                       </div>
 
@@ -641,6 +667,95 @@ export default function SignupPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* ═══ WELCOME MODAL ═════════════════════════════════╗ */}
+      <AnimatePresence>
+        {showWelcome && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={goToDashboard}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl"
+            >
+              {/* Partie haute — visuelle */}
+              <div className="gold-gradient p-8 text-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-white/5" />
+                <div className="relative z-10">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
+                    {welcomeRole === "provider" ? (
+                      <Store size={30} className="text-white" />
+                    ) : (
+                      <User size={30} className="text-white" />
+                    )}
+                  </div>
+                  <h2 className="text-2xl font-serif font-bold text-white mb-2">
+                    Bienvenue chez LELLA 🎉
+                  </h2>
+                  <p className="text-white/80 text-sm">
+                    {welcomeRole === "provider" ? (
+                      <>Là où vos <strong>talents</strong> rencontrent les <strong>cœurs</strong></>
+                    ) : (
+                      <>Là où vos <strong>rêves</strong> rencontrent les <strong>talents</strong></>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* Partie basse — message */}
+              <div className="p-6 md:p-8 text-center space-y-4">
+                <div className="w-12 h-12 mx-auto rounded-full bg-success/10 flex items-center justify-center">
+                  <Check size={22} className="text-success" />
+                </div>
+
+                <div>
+                  <p className="font-semibold text-navy text-base">
+                    {welcomeRole === "provider"
+                      ? `Félicitations, ${welcomeName}!`
+                      : `Bienvenue, ${welcomeName}!`
+                    }
+                  </p>
+                  <p className="text-navy/50 text-sm mt-1 leading-relaxed">
+                    {welcomeRole === "provider" ? (
+                      <>
+                        Votre établissement a bien été enregistré.
+                        <br />
+                        <span className="text-gold font-medium">Notre équipe va vérifier vos informations et valider votre profil sous 24h.</span>
+                        <br />
+                        En attendant, vous pouvez déjà commencer à personnaliser votre espace.
+                      </>
+                    ) : (
+                      <>
+                        Votre compte a été créé avec succès.
+                        <br />
+                        Vous pouvez dès maintenant trouver le prestataire idéal pour votre événement.
+                      </>
+                    )}
+                  </p>
+                </div>
+
+                <button
+                  onClick={goToDashboard}
+                  className="w-full py-3.5 gold-gradient text-white font-semibold rounded-xl text-sm shadow-lg shadow-gold/20 hover:shadow-xl hover:shadow-gold/30 transition-all active:scale-[0.98]"
+                >
+                  {welcomeRole === "provider"
+                    ? "Accéder à mon espace prestataire"
+                    : "Accéder à mon espace client"
+                  }
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
