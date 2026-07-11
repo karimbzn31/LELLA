@@ -120,7 +120,7 @@ export function Navbar() {
               <div className="pt-6 border-t border-sand/50 space-y-3">
                 {isAuthenticated ? (
                   <>
-                    <Link href="/dashboard/client" onClick={() => setMobileMenuOpen(false)}
+                    <Link href={user?.role === "admin" ? "/dashboard/admin" : user?.role === "provider" ? "/dashboard/provider" : "/dashboard/client"} onClick={() => setMobileMenuOpen(false)}
                       className="block py-3 text-lg font-medium text-navy/70">Tableau de bord</Link>
                     <button onClick={() => { logout(); setMobileMenuOpen(false); }}
                       className="block py-3 text-lg font-medium text-error">Déconnexion</button>

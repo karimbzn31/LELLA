@@ -28,7 +28,17 @@ export default function LoginPage() {
 
     const success = await login(email, password);
     if (success) {
-      router.push("/marketplace");
+      // Récupérer l'utilisateur pour rediriger selon son rôle
+      const state = useAuthStore.getState();
+      const role = state.user?.role;
+
+      if (role === "provider") {
+        router.push("/dashboard/provider");
+      } else if (role === "admin") {
+        router.push("/dashboard/admin");
+      } else {
+        router.push("/dashboard/client");
+      }
     } else {
       setError("Email ou mot de passe incorrect");
     }

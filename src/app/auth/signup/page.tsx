@@ -31,7 +31,13 @@ export default function SignupPage() {
 
     const success = await signup(name, email, password, role);
     if (success) {
-      router.push("/marketplace");
+      if (role === "provider") {
+        router.push("/dashboard/provider");
+      } else if (role === "admin") {
+        router.push("/dashboard/admin");
+      } else {
+        router.push("/dashboard/client");
+      }
     }
   };
 

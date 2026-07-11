@@ -16,17 +16,21 @@ const links = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const { unreadCount } = useUIStore();
 
   if (pathname.startsWith("/dashboard")) return null;
+
+  const dashboardHref = user?.role === "admin" ? "/dashboard/admin" : user?.role === "provider" ? "/dashboard/provider" : "/dashboard/client";
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-sand/50 pb-safe">
       <div className="flex items-center justify-around h-14">
         {links.map((link) => {
           const Icon = link.icon;
-          const href = link.href === "/auth/login" && isAuthenticated ? "/dashboard/client" : link.href;
+          let href = link.href;
+          if (link.href === "/auth/login" && isAuthenticated) href = dashboardHref;
+          if (link.href === "/dashboard/client" && isAuthenticated) href = dashboardHref;
           const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
 
           return (
