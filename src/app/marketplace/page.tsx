@@ -208,12 +208,17 @@ export default function MarketplacePage() {
       <div className="section-container">
         {paginatedProviders.length === 0 ? (
           <div className="text-center py-16 max-w-sm mx-auto">
-            <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-white flex items-center justify-center shadow-sm">
-              <Search size={22} className="text-navy/20" />
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-gold/10 to-ivory flex items-center justify-center shadow-sm border border-gold/10">
+              <Search size={28} className="text-gold/40" />
             </div>
-            <p className="text-navy/60 text-base md:text-lg font-medium mb-1">Aucun prestataire trouvé</p>
-            <p className="text-navy/30 text-xs md:text-sm mb-6">Essayez d'élargir votre recherche ou de modifier les filtres.</p>
-            <Button variant="gold" size="sm" onClick={clearFilters}>Réinitialiser les filtres</Button>
+            <p className="text-navy/70 text-lg font-serif font-semibold mb-1">Aucun prestataire pour l'instant</p>
+            <p className="text-navy/30 text-sm mb-2">Les prestataires arrivent bientôt !</p>
+            <p className="text-navy/20 text-xs mb-8 max-w-[260px] mx-auto leading-relaxed">
+              Nous recrutons les meilleurs talents d'Algérie pour vous offrir un service d'exception.
+            </p>
+            <Button variant="gold" size="sm" onClick={clearFilters} className="shadow-lg shadow-gold/20">
+              ← Retour
+            </Button>
           </div>
         ) : viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -262,71 +267,139 @@ export default function MarketplacePage() {
       <AnimatePresence>
         {showMobileFilters && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/30" onClick={() => setShowMobileFilters(false)}>
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)}>
             <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25 }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
               onClick={e => e.stopPropagation()}
-              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto pb-safe">
-              <div className="sticky top-0 bg-white border-b border-sand/50 p-4 rounded-t-3xl flex items-center justify-between z-10">
-                <h3 className="font-semibold text-navy text-lg">Filtres</h3>
-                <button onClick={() => setShowMobileFilters(false)} className="p-1.5 text-navy/40 hover:text-navy">
-                  <X size={20} />
-                </button>
+              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto pb-safe shadow-2xl">
+
+              {/* Header with drag handle */}
+              <div className="sticky top-0 bg-white/95 backdrop-blur-xl z-10">
+                <div className="flex justify-center pt-2 pb-1">
+                  <div className="w-10 h-1 rounded-full bg-sand/50" />
+                </div>
+                <div className="flex items-center justify-between px-5 pb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center">
+                      <SlidersHorizontal size={15} className="text-gold" />
+                    </div>
+                    <h3 className="font-semibold text-navy text-lg">Filtres</h3>
+                    {hasActiveFilters && (
+                      <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+                    )}
+                  </div>
+                  <button onClick={() => setShowMobileFilters(false)}
+                    className="w-8 h-8 rounded-full bg-ivory flex items-center justify-center text-navy/40 hover:text-navy hover:bg-sand/50 transition-all active:scale-90">
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
-              <div className="p-5 space-y-6">
+
+              {/* Filter sections */}
+              <div className="px-5 pb-4 space-y-5">
                 {/* Wilaya */}
-                <div className="space-y-2.5">
-                  <label className="text-sm font-medium text-navy/80">Wilaya</label>
-                  <select value={selectedWilaya || ""} onChange={e => setSelectedWilaya(e.target.value || null)} className="input-premium w-full text-sm">
+                <div className="bg-ivory/50 rounded-2xl p-4 space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-navy/5 flex items-center justify-center">
+                      <MapPin size={12} className="text-navy/40" />
+                    </div>
+                    <label className="text-sm font-semibold text-navy">Wilaya</label>
+                  </div>
+                  <select value={selectedWilaya || ""} onChange={e => setSelectedWilaya(e.target.value || null)}
+                    className="w-full px-3.5 py-3 bg-white rounded-xl text-sm border border-sand/50 focus:border-gold/50 focus:ring-2 focus:ring-gold/10 outline-none transition-all appearance-none">
                     <option value="">Toutes les wilayas</option>
                     {ALL_WILAYAS.map(w => <option key={w} value={w}>{w}</option>)}
                   </select>
                 </div>
+
                 {/* Budget */}
-                <div className="space-y-3">
+                <div className="bg-ivory/50 rounded-2xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-navy/60">Budget max</span>
-                    <span className="text-sm font-medium text-gold">{maxPrice.toLocaleString()} DZD</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-navy/5 flex items-center justify-center">
+                        <span className="text-navy/40 text-xs font-bold">$</span>
+                      </div>
+                      <label className="text-sm font-semibold text-navy">Budget maximum</label>
+                    </div>
+                    <span className="text-sm font-bold text-gold bg-gold/10 px-3 py-1 rounded-full">
+                      {maxPrice.toLocaleString()} DZD
+                    </span>
                   </div>
-                  <input type="range" min={0} max={500000} step={10000} value={maxPrice}
-                    onChange={e => setMaxPrice(Number(e.target.value))} className="w-full accent-gold h-1.5" />
+                  <div className="relative pt-1">
+                    <input type="range" min={50000} max={500000} step={10000} value={maxPrice}
+                      onChange={e => setMaxPrice(Number(e.target.value))}
+                      className="w-full accent-gold h-2 appearance-none bg-gradient-to-r from-gold/30 to-gold rounded-full outline-none"
+                      style={{
+                        background: `linear-gradient(to right, #C7A45D 0%, #C7A45D ${(maxPrice / 500000) * 100}%, #E8DDD0 ${(maxPrice / 500000) * 100}%, #E8DDD0 100%)`,
+                      }}
+                    />
+                    <div className="flex justify-between text-[10px] text-navy/30 mt-1">
+                      <span>50 000 DZD</span>
+                      <span>500 000 DZD</span>
+                    </div>
+                  </div>
                 </div>
+
                 {/* Note min */}
-                <div className="space-y-2.5">
-                  <label className="text-sm font-medium text-navy/80">Note minimum</label>
+                <div className="bg-ivory/50 rounded-2xl p-4 space-y-2.5">
                   <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-navy/5 flex items-center justify-center">
+                      <Star size={12} className="text-navy/40" />
+                    </div>
+                    <label className="text-sm font-semibold text-navy">Note minimum</label>
+                  </div>
+                  <div className="grid grid-cols-5 gap-2">
                     {[0, 3, 3.5, 4, 4.5].map(r => (
                       <button key={r} onClick={() => setMinRating(r)}
-                        className={cn("flex-1 py-2.5 rounded-xl text-sm font-medium transition-all min-h-[40px]",
-                          minRating === r ? "bg-gold text-white" : "bg-ivory text-navy/60 hover:bg-gold/10")}>
+                        className={cn("py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95",
+                          minRating === r
+                            ? "bg-gold text-white shadow-md shadow-gold/20"
+                            : "bg-white text-navy/60 border border-sand/50 hover:border-gold/30")}>
                         {r === 0 ? "Tous" : r + "+"}
                       </button>
                     ))}
                   </div>
                 </div>
+
                 {/* Tri */}
-                <div className="space-y-2.5">
-                  <label className="text-sm font-medium text-navy/80">Trier par</label>
+                <div className="bg-ivory/50 rounded-2xl p-4 space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-navy/5 flex items-center justify-center">
+                      <ArrowUpDown size={12} className="text-navy/40" />
+                    </div>
+                    <label className="text-sm font-semibold text-navy">Trier par</label>
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     {SORT_OPTIONS.map(o => (
                       <button key={o.value} onClick={() => setSortBy(o.value as typeof sortBy)}
-                        className={cn("py-2.5 rounded-xl text-sm font-medium transition-all min-h-[40px]",
-                          sortBy === o.value ? "bg-gold text-white" : "bg-ivory text-navy/60 hover:bg-gold/10")}>
+                        className={cn("py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95",
+                          sortBy === o.value
+                            ? "bg-gold text-white shadow-md shadow-gold/20"
+                            : "bg-white text-navy/60 border border-sand/50 hover:border-gold/30")}>
                         {o.label}
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
-              <div className="p-4 border-t border-sand/50 flex gap-3">
+
+              {/* Footer buttons */}
+              <div className="sticky bottom-0 bg-white/95 backdrop-blur-xl border-t border-sand/30 p-4 flex gap-3">
                 <button onClick={() => { clearFilters(); setShowMobileFilters(false); }}
-                  className="flex-1 py-3 rounded-xl border border-sand text-navy/60 text-sm font-medium min-h-[44px]">
+                  className="flex-1 py-3.5 rounded-xl border-2 border-sand/50 text-navy/50 text-sm font-semibold min-h-[48px] hover:border-navy/20 hover:text-navy transition-all active:scale-[0.98]">
                   Réinitialiser
                 </button>
-                <button onClick={() => setShowMobileFilters(false)}
-                  className="flex-1 py-3 rounded-xl gold-gradient text-white text-sm font-medium min-h-[44px]">
-                  Voir {filteredProviders.length} résultat{filteredProviders.length > 1 ? "s" : ""}
-                </button>
+                {filteredProviders.length > 0 ? (
+                  <button onClick={() => setShowMobileFilters(false)}
+                    className="flex-1 py-3.5 rounded-xl gold-gradient text-white text-sm font-semibold min-h-[48px] shadow-lg shadow-gold/20 hover:shadow-xl hover:shadow-gold/30 transition-all active:scale-[0.98]">
+                    Voir {filteredProviders.length} résultat{filteredProviders.length > 1 ? "s" : ""}
+                  </button>
+                ) : (
+                  <button onClick={() => setShowMobileFilters(false)}
+                    className="flex-1 py-3.5 rounded-xl bg-navy/10 text-navy/30 text-sm font-semibold min-h-[48px] cursor-not-allowed">
+                    Aucun résultat
+                  </button>
+                )}
               </div>
             </motion.div>
           </motion.div>
