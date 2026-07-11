@@ -101,7 +101,11 @@ export default function SignupPage() {
 
   // ─── Gestion code de vérification ────────────────────────────
   const sendCode = async () => {
-    if (!name || !email || !password) {
+    // Le prestataire utilise establishementName comme nom
+    const actualName = role === "provider" ? establishementName : name;
+    const actualPwd = role === "provider" ? password : password;
+
+    if (!actualName || !email || !actualPwd) {
       setError("Veuillez remplir tous les champs");
       return false;
     }
@@ -109,7 +113,7 @@ export default function SignupPage() {
       setError("Email invalide");
       return false;
     }
-    if (password.length < 6) {
+    if (actualPwd.length < 6) {
       setError("Le mot de passe doit faire au moins 6 caractères");
       return false;
     }
@@ -118,7 +122,7 @@ export default function SignupPage() {
     const code = await sendVerificationCode(email);
     setDemoCode(code);
     setPendingVerification({
-      name, email, password, role,
+      name: actualName, email, password: actualPwd, role,
       code,
       expiresAt: Date.now() + 10 * 60 * 1000,
     });
@@ -213,7 +217,7 @@ export default function SignupPage() {
       case 0: return establishementName.length > 0 && selectedCategory.length > 0;
       case 1: return phone.length >= 8 && wilaya.length > 0 && commune.length > 0;
       case 2: return tagline.length >= 5;
-      case 3: return services.length > 0;
+      case 3: return services.length > 0 && email.length > 0 && password.length >= 6;
       default: return false;
     }
   };
@@ -301,6 +305,7 @@ export default function SignupPage() {
             {/* ═══ PROVIDER — MULTI-STEP WIZARD ════════════════ */}
             {role === "provider" && !showCodeInput && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                {error && <p className="text-error text-xs md:text-sm bg-error/5 p-3 rounded-xl mb-4">{error}</p>}
                 {/* Progress bar */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
@@ -582,6 +587,23 @@ export default function SignupPage() {
                         <p className="flex items-center gap-1 text-[10px] text-gold/60 mt-1">
                           <Shield size={10} /> Le NRC donne le badge "PRO VÉRIFIÉ" sur votre profil
                         </p>
+                      </div>
+
+                      {/* Sécurité du compte */}
+                      <div className="bg-ivory/50 rounded-2xl p-4 space-y-3">
+                        <p className="text-xs font-semibold text-navy">Sécurité du compte</p>
+                        <div className="flex items-center gap-3 px-3.5 py-3 bg-white rounded-xl border border-sand/30">
+                          <Mail size={15} className="text-gold shrink-0" />
+                          <input type="email" placeholder="Votre email *" value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            className="bg-transparent text-sm w-full outline-none" />
+                        </div>
+                        <div className="flex items-center gap-3 px-3.5 py-3 bg-white rounded-xl border border-sand/30">
+                          <span className="text-gold text-sm shrink-0">🔒</span>
+                          <input type="password" placeholder="Mot de passe (min. 6 car.) *" value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            className="bg-transparent text-sm w-full outline-none" />
+                        </div>
                       </div>
 
                       <div className="flex gap-3">
