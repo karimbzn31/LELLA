@@ -45,7 +45,7 @@ export default function MarketplacePage() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedWilaya, setSelectedWilaya] = useState<string | null>(null);
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(500000);
+  const [maxPrice, setMaxPrice] = useState(50000);
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState<"popularity" | "price_asc" | "price_desc" | "rating">("popularity");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -97,7 +97,7 @@ export default function MarketplacePage() {
     setFavorites(p => p.includes(id) ? p.filter(f => f !== id) : [...p, id]);
   };
 
-  const clearFilters = () => { setSearchQuery(""); setSelectedGenre(null); setSelectedWilaya(null); setMinPrice(0); setMaxPrice(500000); setMinRating(0); };
+  const clearFilters = () => { setSearchQuery(""); setSelectedGenre(null); setSelectedWilaya(null); setMinPrice(0); setMaxPrice(50000); setMinRating(0); };
   const hasActiveFilters = searchQuery || selectedGenre || selectedWilaya || minPrice > 0 || maxPrice < 500000 || minRating > 0;
 
   // Skeleton loading
