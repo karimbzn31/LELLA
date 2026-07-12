@@ -58,7 +58,19 @@ export default function MarketplacePage() {
     return JSON.parse(localStorage.getItem("lella_favorites") || "[]");
   });
 
-  useEffect(() => { const t = setTimeout(() => setLoading(false), 500); return () => clearTimeout(t); }, []);
+  // Lire les paramètres d'URL (recherche depuis le dashboard)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const searchFromUrl = params.get("search");
+    const catFromUrl = params.get("category");
+    if (searchFromUrl) setSearchQuery(searchFromUrl);
+    if (catFromUrl) {
+      const group = categoryGroups.find(g => g.name.toLowerCase() === catFromUrl.toLowerCase().replace(/-/g, " "));
+      if (group) setSelectedGenre(group.name);
+    }
+    const t = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(t);
+  }, []);
 
   const filteredProviders = useMemo(() => {
     let result = [...allProviders];
