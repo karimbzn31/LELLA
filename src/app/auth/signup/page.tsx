@@ -459,29 +459,71 @@ export default function SignupPage() {
                         <p className="text-xs text-navy/40">Montrez qui vous êtes en un coup d'œil</p>
                       </div>
 
-                      {/* Photo principale — grande, bien mise en avant */}
+                      {/* Photo principale — vrai upload avec aperçu */}
                       <div>
-                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Photo de couverture *</label>
-                        <button type="button"
-                          className="w-full h-32 rounded-2xl bg-ivory/50 border-2 border-dashed border-sand/40 flex items-center justify-center hover:border-gold/30 hover:bg-gold/5 transition-all group">
-                          <div className="text-center">
-                            <Camera size={28} className="mx-auto mb-1 text-navy/20 group-hover:text-gold/40 transition-colors" />
-                            <span className="text-xs text-navy/30">Cliquez pour ajouter votre meilleure réalisation</span>
-                          </div>
+                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">
+                          Photo de couverture
+                          <span className="text-gold ml-1 text-[9px]">(optionnelle — ajoutez-la plus tard si vous voulez)</span>
+                        </label>
+                        <input type="file" accept="image/*" id="cover-upload" className="hidden"
+                          onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => {
+                                if (ev.target?.result) {
+                                  setPhotos([ev.target.result as string, ...photos.slice(1)]);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                        <button type="button" onClick={() => document.getElementById("cover-upload")?.click()}
+                          className="w-full h-32 rounded-2xl bg-ivory/50 border-2 border-dashed border-sand/40 flex items-center justify-center hover:border-gold/30 hover:bg-gold/5 transition-all group overflow-hidden relative">
+                          {photos[0] ? (
+                            <img src={photos[0]} alt="Couverture" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="text-center">
+                              <Camera size={28} className="mx-auto mb-1 text-navy/20 group-hover:text-gold/40 transition-colors" />
+                              <span className="text-xs text-navy/30">Cliquez pour ajouter une photo</span>
+                            </div>
+                          )}
                         </button>
                       </div>
 
-                      {/* Mini galerie — 3 photos supplémentaires */}
+                      {/* Mini galerie — 3 photos supplémentaires avec upload */}
                       <div>
-                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Galerie (optionnel)</label>
+                        <label className="text-xs text-navy/50 block mb-1.5 font-medium">Galerie <span className="text-navy/20">(optionnel)</span></label>
                         <div className="flex gap-2">
-                          {[0, 1, 2].map(i => (
-                            <button key={i} type="button"
-                              className="flex-1 aspect-square rounded-xl bg-ivory/50 border-2 border-dashed border-sand/40 flex items-center justify-center hover:border-gold/30 hover:bg-gold/5 transition-all group">
-                              <Plus size={18} className="text-navy/20 group-hover:text-gold/40" />
-                            </button>
+                          {[1, 2, 3].map(i => (
+                            <div key={i} className="flex-1">
+                              <input type="file" accept="image/*" id={`gallery-upload-${i}`} className="hidden"
+                                onChange={e => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (ev) => {
+                                      if (ev.target?.result) {
+                                        const newPhotos = [...photos];
+                                        newPhotos[i] = ev.target.result as string;
+                                        setPhotos(newPhotos);
+                                      }
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                }} />
+                              <button type="button" onClick={() => document.getElementById(`gallery-upload-${i}`)?.click()}
+                                className="w-full aspect-square rounded-xl bg-ivory/50 border-2 border-dashed border-sand/40 flex items-center justify-center hover:border-gold/30 hover:bg-gold/5 transition-all group overflow-hidden">
+                                {photos[i] ? (
+                                  <img src={photos[i]} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <Plus size={18} className="text-navy/20 group-hover:text-gold/40" />
+                                )}
+                              </button>
+                            </div>
                           ))}
                         </div>
+                        <p className="text-[10px] text-navy/30 mt-1">Vous pourrez ajouter ou modifier vos photos depuis votre tableau de bord.</p>
                       </div>
 
                       {/* Tagline — UNE SEULE phrase percutante */}
