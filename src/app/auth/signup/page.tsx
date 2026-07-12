@@ -816,18 +816,10 @@ export default function SignupPage() {
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-gold text-xs font-bold">!</span>
+                            <span className="text-gold text-xs">🔒</span>
                           </div>
                           <p className="text-sm text-navy/60 leading-relaxed">
-                            <strong className="text-gold">Notre équipe</strong> va vérifier vos informations et valider votre profil professionnel sous <strong className="text-navy">24h</strong>.
-                          </p>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-gold text-xs">👉</span>
-                          </div>
-                          <p className="text-sm text-navy/60 leading-relaxed">
-                            En attendant, vous pouvez déjà <strong className="text-navy">personnaliser votre espace</strong> et préparer vos services.
+                            Vous pouvez accéder à votre <strong className="text-navy">dashboard</strong> dès maintenant pour préparer votre profil. <strong className="text-gold">Il sera visible sur la plateforme une fois validé par notre équipe.</strong>
                           </p>
                         </div>
                       </div>
