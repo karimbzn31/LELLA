@@ -739,81 +739,121 @@ export default function SignupPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
             onClick={goToDashboard}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.92, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              exit={{ opacity: 0, scale: 0.92, y: 30 }}
+              transition={{ type: "spring", damping: 22, stiffness: 280 }}
               onClick={e => e.stopPropagation()}
               className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl"
             >
-              {/* Partie haute — visuelle */}
-              <div className="gold-gradient p-8 text-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-white/5" />
+              {/* ── Haut : bannière dorée ────────────────────── */}
+              <div className="relative bg-gradient-to-br from-gold via-amber-600 to-gold/80 px-6 pt-10 pb-14 text-center overflow-hidden">
+                {/* Motifs décoratifs */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5" />
+                <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/5" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 rounded-full bg-white/5 blur-2xl" />
+
                 <div className="relative z-10">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
+                  {/* Icône */}
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-black/10 ring-2 ring-white/20">
                     {welcomeRole === "provider" ? (
-                      <Store size={30} className="text-white" />
+                      <Store size="28" className="text-white" />
                     ) : (
-                      <User size={30} className="text-white" />
+                      <User size="28" className="text-white" />
                     )}
                   </div>
-                  <h2 className="text-2xl font-serif font-bold text-white mb-2">
-                    Bienvenue chez LELLA 🎉
+
+                  {/* Titre */}
+                  <h2 className="text-2xl font-serif font-bold text-white mb-1.5 leading-tight">
+                    Bienvenue chez <span className="text-white/90">LELLA</span>
                   </h2>
-                  <p className="text-white/80 text-sm">
-                    {welcomeRole === "provider" ? (
-                      <>Là où vos <strong>talents</strong> rencontrent les <strong>cœurs</strong></>
-                    ) : (
-                      <>Là où vos <strong>rêves</strong> rencontrent les <strong>talents</strong></>
-                    )}
-                  </p>
+
+                  {/* Slogan */}
+                  <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/15">
+                    <span className="text-white/90 text-xs font-medium">
+                      {welcomeRole === "provider"
+                        ? "✨ Là où vos talents rencontrent les cœurs"
+                        : "✨ Là où vos rêves rencontrent les talents"
+                      }
+                    </span>
+                  </div>
                 </div>
+
+                {/* Vague décorative en bas */}
+                <svg className="absolute bottom-0 left-0 right-0 w-full h-6 text-white" viewBox="0 0 400 24" preserveAspectRatio="none">
+                  <path d="M0,24 Q50,12 100,18 Q150,6 200,14 Q250,4 300,12 Q350,2 400,10 L400,24 Z" fill="white" />
+                </svg>
               </div>
 
-              {/* Partie basse — message */}
-              <div className="p-6 md:p-8 text-center space-y-4">
-                <div className="w-12 h-12 mx-auto rounded-full bg-success/10 flex items-center justify-center">
-                  <Check size={22} className="text-success" />
+              {/* ── Bas : contenu ────────────────────────────── */}
+              <div className="px-6 pb-8 -mt-2 relative z-10 bg-white rounded-t-2xl">
+                {/* Check */}
+                <div className="w-12 h-12 mx-auto -mt-6 mb-4 rounded-xl bg-gradient-to-br from-success/20 to-success/5 flex items-center justify-center shadow-sm border border-success/10">
+                  <Check size="24" className="text-success" />
                 </div>
 
-                <div>
-                  <p className="font-semibold text-navy text-base">
-                    {welcomeRole === "provider"
-                      ? `Félicitations, ${welcomeName}!`
-                      : `Bienvenue, ${welcomeName}!`
-                    }
-                  </p>
-                  <p className="text-navy/50 text-sm mt-1 leading-relaxed">
-                    {welcomeRole === "provider" ? (
-                      <>
-                        Votre établissement a bien été enregistré.
-                        <br />
-                        <span className="text-gold font-medium">Notre équipe va vérifier vos informations et valider votre profil sous 24h.</span>
-                        <br />
-                        En attendant, vous pouvez déjà commencer à personnaliser votre espace.
-                      </>
-                    ) : (
-                      <>
-                        Votre compte a été créé avec succès.
-                        <br />
-                        Vous pouvez dès maintenant trouver le prestataire idéal pour votre événement.
-                      </>
-                    )}
-                  </p>
+                {/* Message selon le rôle */}
+                <div className="text-center space-y-3">
+                  {welcomeRole === "provider" ? (
+                    <>
+                      <h3 className="font-serif font-bold text-navy text-xl leading-tight">
+                        Félicitations,<br />
+                        <span className="text-gold">{welcomeName}</span> !
+                      </h3>
+
+                      <div className="bg-ivory/70 rounded-2xl p-4 space-y-2 text-left">
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-success/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <Check size="12" className="text-success" />
+                          </div>
+                          <p className="text-sm text-navy/60 leading-relaxed">
+                            Votre établissement a bien été <strong className="text-navy">enregistré</strong> sur LELLA.
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="text-gold text-xs font-bold">!</span>
+                          </div>
+                          <p className="text-sm text-navy/60 leading-relaxed">
+                            <strong className="text-gold">Notre équipe</strong> va vérifier vos informations et valider votre profil professionnel sous <strong className="text-navy">24h</strong>.
+                          </p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="text-gold text-xs">👉</span>
+                          </div>
+                          <p className="text-sm text-navy/60 leading-relaxed">
+                            En attendant, vous pouvez déjà <strong className="text-navy">personnaliser votre espace</strong> et préparer vos services.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="font-serif font-bold text-navy text-xl">
+                        Bienvenue, <span className="text-gold">{welcomeName}</span> !
+                      </h3>
+                      <p className="text-sm text-navy/50 leading-relaxed">
+                        Votre compte a été créé avec succès. Vous pouvez dès maintenant trouver le prestataire idéal pour votre événement.
+                      </p>
+                    </>
+                  )}
                 </div>
 
+                {/* Bouton CTA */}
                 <button
                   onClick={goToDashboard}
-                  className="w-full py-3.5 gold-gradient text-white font-semibold rounded-xl text-sm shadow-lg shadow-gold/20 hover:shadow-xl hover:shadow-gold/30 transition-all active:scale-[0.98]"
+                  className="mt-6 w-full py-3.5 gold-gradient text-white font-semibold rounded-xl text-sm shadow-lg shadow-gold/20 hover:shadow-xl hover:shadow-gold/30 transition-all active:scale-[0.97] flex items-center justify-center gap-2 group"
                 >
                   {welcomeRole === "provider"
                     ? "Accéder à mon espace prestataire"
                     : "Accéder à mon espace client"
                   }
+                  <ArrowRight size="16" className="transition-transform group-hover:translate-x-1" />
                 </button>
               </div>
             </motion.div>
